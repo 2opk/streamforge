@@ -1,5 +1,7 @@
 # TA AE
 
+[![DOI](https://zenodo.org/badge/893756798.svg)](https://zenodo.org/badge/latestdoi/893756798)
+
 ## Abstract
 
 This artifact supports the reproduction of results presented in paper #80 at PPoPP'25, titled TA: A Tensor Property-Aware Optimization System for Long-Context DNN Programs, including Figure 12, Figure 13 and Figure 14.
