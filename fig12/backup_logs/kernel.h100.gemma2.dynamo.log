@@ -1,0 +1,13 @@
+model='gemma2' system='dynamo' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=2176.0
+gflops=137.438953472
+mib=2176.0
+checking dynamo...
+out loss: {'abs_max': 0.0029296875, 'abs_mean': 3.536052220098895e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 2335.0, 'nz_rel_mean': 0.008480798597882857, 'mse': 3.449724830726715e-09, 'rmse': 5.873435817923539e-05}
+warmup start
+warmup done
+[dynamo] avg 4.0447 ms, min 3.9940 ms, max 4.2498 ms, 33979.613926602775 gflops/s (10 runs, 100 warmups, profiled)

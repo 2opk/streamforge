@@ -1,0 +1,14 @@
+model='kf' system='torch' seqlen=4096
+input_names=['q', 'k', 'v', 'exp_rand']
+output_names=['out', 'kf_score']
+check=True
+start_peak_mem_mib=2144.0
+end_peak_mem_mib=11456.0
+gflops=137.438953472
+mib=11456.0
+checking torch...
+out loss: {'abs_max': 0.0, 'abs_mean': 0.0, 'rel_max': nan, 'rel_mean': nan, 'nz_rel_max': 0.0, 'nz_rel_mean': 0.0, 'mse': 0.0, 'rmse': 0.0}
+kf_score loss: {'abs_max': 0.0, 'abs_mean': 0.0, 'rel_max': 0.0, 'rel_mean': 0.0, 'nz_rel_max': 0.0, 'nz_rel_mean': 0.0, 'mse': 0.0, 'rmse': 0.0}
+warmup start
+warmup done
+[torch] avg 27.9769 ms, min 27.9567 ms, max 28.0263 ms, 4912.579550887423 gflops/s (10 runs, 100 warmups, profiled)

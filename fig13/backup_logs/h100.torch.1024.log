@@ -1,0 +1,14 @@
+model='h2o' system='torch' seqlen=1024
+input_names=['q', 'k', 'v']
+output_names=['out', 'h2o_score']
+check=True
+start_peak_mem_mib=24.0
+end_peak_mem_mib=386.1259765625
+gflops=8.589934592
+mib=386.1259765625
+checking torch...
+out loss: {'abs_max': 0.0, 'abs_mean': 0.0, 'rel_max': 0.0, 'rel_mean': 0.0, 'nz_rel_max': 0.0, 'nz_rel_mean': 0.0, 'mse': 0.0, 'rmse': 0.0}
+h2o_score loss: {'abs_max': 0.0, 'abs_mean': 0.0, 'rel_max': 0.0, 'rel_mean': 0.0, 'nz_rel_max': 0.0, 'nz_rel_mean': 0.0, 'mse': 0.0, 'rmse': 0.0}
+warmup start
+warmup done
+[torch] avg 0.9424 ms, min 0.9291 ms, max 1.0359 ms, 9114.522760242851 gflops/s (10 runs, 100 warmups, profiled)

@@ -1,0 +1,16 @@
+srun: job 5080 queued and waiting for resources
+srun: job 5080 has been allocated resources
+model='h2o' system='dynamo' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out', 'h2o_score']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=2209.0
+gflops=137.438953472
+mib=2209.0
+checking dynamo...
+out loss: {'abs_max': 0.001953125, 'abs_mean': 1.9596736592575326e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 1318.3333333333333, 'nz_rel_mean': 0.004411247435457833, 'mse': 1.3019333167047877e-09, 'rmse': 3.608231307309424e-05}
+h2o_score loss: {'abs_max': 0.0007505416870117188, 'abs_mean': 1.3256871742028942e-05, 'rel_max': 0.000871932477019533, 'rel_mean': 1.7578665300181046e-05, 'nz_rel_max': 0.000871932477019533, 'nz_rel_mean': 1.7578665300181046e-05, 'mse': 6.4403733802855e-10, 'rmse': 2.5377890732457456e-05}
+warmup start
+warmup done
+[dynamo] avg 4.0929 ms, min 4.0371 ms, max 4.2853 ms, 33579.78157404211 gflops/s (10 runs, 100 warmups, profiled)

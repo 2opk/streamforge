@@ -1,0 +1,39 @@
+[11/25/2024-18:39:28] [TRT] [I] [MemUsageChange] Init CUDA: CPU +2, GPU +0, now: CPU 435, GPU 6821 (MiB)
+[11/25/2024-18:39:30] [TRT] [I] [MemUsageChange] Init builder kernel library: CPU +2030, GPU +374, now: CPU 2621, GPU 7195 (MiB)
+[11/25/2024-18:39:30] [TRT] [W] profileSharing0806 is on by default in TensorRT 10.0. This flag is deprecated and has no effect.
+[11/25/2024-18:39:30] [TRT] [I] Local timing cache in use. Profiling results in this builder pass will not be stored.
+[11/25/2024-18:39:30] [TRT] [I] Compiler backend is used during engine build.
+[11/25/2024-18:39:33] [TRT] [I] Detected 3 inputs and 3 output network tensors.
+[11/25/2024-18:39:33] [TRT] [I] Total Host Persistent Memory: 80 bytes
+[11/25/2024-18:39:33] [TRT] [I] Total Device Persistent Memory: 0 bytes
+[11/25/2024-18:39:33] [TRT] [I] Max Scratch Memory: 3321888768 bytes
+[11/25/2024-18:39:33] [TRT] [I] [BlockAssignment] Started assigning block shifts. This will take 1 steps to complete.
+[11/25/2024-18:39:33] [TRT] [I] [BlockAssignment] Algorithm ShiftNTopDown took 0.0079ms to assign 1 blocks to 1 nodes requiring 3321888768 bytes.
+[11/25/2024-18:39:33] [TRT] [I] Total Activation Memory: 3321888768 bytes
+[11/25/2024-18:39:33] [TRT] [I] Total Weights Memory: 33554816 bytes
+[11/25/2024-18:39:33] [TRT] [I] Compiler backend is used during engine execution.
+[11/25/2024-18:39:33] [TRT] [I] Engine generation completed in 2.79542 seconds.
+[11/25/2024-18:39:33] [TRT] [I] [MemUsageStats] Peak memory usage of TRT CPU/GPU memory allocators: CPU 0 MiB, GPU 6144 MiB
+[11/25/2024-18:39:33] [TRT] [I] Loaded engine size: 32 MiB
+[11/25/2024-18:39:33] [TRT] [I] [MS] Running engine with multi stream info
+[11/25/2024-18:39:33] [TRT] [I] [MS] Number of aux streams is 2
+[11/25/2024-18:39:33] [TRT] [I] [MS] Number of total worker streams is 3
+[11/25/2024-18:39:33] [TRT] [I] [MS] The main stream provided by execute/enqueue calls is the first worker stream
+[11/25/2024-18:39:33] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in IExecutionContext creation: CPU +0, GPU +3168, now: CPU 0, GPU 3200 (MiB)
+model='roco' system='tensorrt' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out', 'roco_score', 'roco_sq_score']
+check=True
+tensorrt_llm not found
+start_peak_mem_mib=104.125
+[11/25/2024-18:39:33] [TRT] [W] Using default stream in enqueueV3() may lead to performance issues due to additional calls to cudaStreamSynchronize() by TensorRT to ensure correct synchronization. Please use non-default stream instead.
+end_peak_mem_mib=137.125
+gflops=137.438953472
+mib=137.125
+checking tensorrt...
+out loss: {'abs_max': 0.00439453125, 'abs_mean': 8.274015156573e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 4969.0, 'nz_rel_mean': 0.017069953149680683, 'mse': 1.4243299268012716e-08, 'rmse': 0.00011934529428516533}
+roco_score loss: {'abs_max': 0.0016674995422363281, 'abs_mean': 4.226149986258365e-05, 'rel_max': 0.00296346010260588, 'rel_mean': 5.516425332844049e-05, 'nz_rel_max': 0.00296346010260588, 'nz_rel_mean': 5.516425332844049e-05, 'mse': 6.567857767448649e-09, 'rmse': 8.104232084194436e-05}
+roco_sq_score loss: {'abs_max': 0.001311182975769043, 'abs_mean': 2.2882718661679395e-06, 'rel_max': 0.010688927389213395, 'rel_mean': 0.0004712150469135141, 'nz_rel_max': 0.010688927389213395, 'nz_rel_mean': 0.0004712150469135141, 'mse': 3.8772647398232267e-10, 'rmse': 1.9690771289675848e-05}
+warmup start
+warmup done
+[tensorrt] avg 12.8242 ms, min 12.7344 ms, max 12.9468 ms, 10717.11494406686 gflops/s (10 runs, 100 warmups, profiled)

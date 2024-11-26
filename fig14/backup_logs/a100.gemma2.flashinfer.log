@@ -1,0 +1,15 @@
+srun: job 181831 queued and waiting for resources
+srun: job 181831 has been allocated resources
+model='gemma2' system='flashinfer' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=160.0
+gflops=137.438953472
+mib=160.0
+checking flashinfer...
+out loss: {'abs_max': 0.00341796875, 'abs_mean': 4.146917277836337e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 1168.0, 'nz_rel_mean': 0.00943538388168634, 'mse': 4.644846993648603e-09, 'rmse': 6.81531143356531e-05}
+warmup start
+warmup done
+[flashinfer] avg 1.3215 ms, min 1.2782 ms, max 1.3709 ms, 104005.47618507984 gflops/s (10 runs, 100 warmups, profiled)

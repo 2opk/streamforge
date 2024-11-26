@@ -1,0 +1,15 @@
+srun: job 181830 queued and waiting for resources
+srun: job 181830 has been allocated resources
+model='attn' system='flashinfer' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=160.0
+gflops=137.438953472
+mib=160.0
+checking flashinfer...
+out loss: {'abs_max': 0.0029296875, 'abs_mean': 3.200704506056695e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 1886.0, 'nz_rel_mean': 0.006912067726891273, 'mse': 2.9425992949684803e-09, 'rmse': 5.424573066120946e-05}
+warmup start
+warmup done
+[flashinfer] avg 1.4643 ms, min 1.4298 ms, max 1.5216 ms, 93857.07229089102 gflops/s (10 runs, 100 warmups, profiled)

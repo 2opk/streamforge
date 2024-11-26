@@ -1,0 +1,15 @@
+model='roco' system='dynamo' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out', 'roco_score', 'roco_sq_score']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=2397.265625
+gflops=137.438953472
+mib=2397.265625
+checking dynamo...
+out loss: {'abs_max': 0.001953125, 'abs_mean': 1.96095121012263e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 765.0, 'nz_rel_mean': 0.004503831692800552, 'mse': 1.3134914795580934e-09, 'rmse': 3.6242123000151266e-05}
+roco_score loss: {'abs_max': 0.0006461143493652344, 'abs_mean': 1.3350838415179811e-05, 'rel_max': 0.000830924677312116, 'rel_mean': 1.7687449788017943e-05, 'nz_rel_max': 0.000830924677312116, 'nz_rel_mean': 1.7687449788017943e-05, 'mse': 6.654835784673102e-10, 'rmse': 2.5796968396835125e-05}
+roco_sq_score loss: {'abs_max': 0.0005169212818145752, 'abs_mean': 7.441257925031822e-07, 'rel_max': 0.0037023679068708053, 'rel_mean': 0.00014759647619177197, 'nz_rel_max': 0.0037023679068708053, 'nz_rel_mean': 0.00014759647619177197, 'mse': 4.019441015791939e-11, 'rmse': 6.339906163179341e-06}
+warmup start
+warmup done
+[dynamo] avg 5.7019 ms, min 5.6090 ms, max 5.8656 ms, 24104.16519495486 gflops/s (10 runs, 100 warmups, profiled)

@@ -1,0 +1,14 @@
+model='corm' system='torch' seqlen=4096
+input_names=['q', 'k', 'v', 'corm_mask']
+output_names=['out', 'corm_score']
+check=True
+start_peak_mem_mib=160.0
+end_peak_mem_mib=5344.0
+gflops=137.438953472
+mib=5344.0
+checking torch...
+out loss: {'abs_max': 0.0, 'abs_mean': 0.0, 'rel_max': nan, 'rel_mean': nan, 'nz_rel_max': 0.0, 'nz_rel_mean': 0.0, 'mse': 0.0, 'rmse': 0.0}
+corm_score loss: {'err_num': 0, 'err': 0.0}
+warmup start
+warmup done
+[torch] avg 14.9935 ms, min 14.9693 ms, max 15.0349 ms, 9166.597796740882 gflops/s (10 runs, 100 warmups, profiled)

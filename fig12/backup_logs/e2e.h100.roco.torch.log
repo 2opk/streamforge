@@ -1,0 +1,14 @@
+model='roco' system='torch' seqlen=4096 layer_num=None
+input_names=['q', 'k', 'v']
+output_names=['out', 'roco_score', 'roco_sq_score']
+weight_zoo_path='/home/ppopp25_ae/ppopp25_ae/weight_zoo.json'
+hf_config.num_hidden_layers=32
+data_path='/home/ppopp25_ae/ppopp25_ae/vcsum.jsonl'
+token_ids.shape=torch.Size([1, 4096])
+token_ids.grad=None
+using safe tensor: files={'model-00001-of-00002.safetensors', 'model-00002-of-00002.safetensors'}
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 167.44it/s]
+  0%|          | 0/32 [00:00<?, ?it/s]  3%|▎         | 1/32 [00:00<00:03,  9.46it/s]  9%|▉         | 3/32 [00:00<00:02, 10.09it/s] 16%|█▌        | 5/32 [00:00<00:02, 10.20it/s] 22%|██▏       | 7/32 [00:00<00:02, 10.24it/s] 28%|██▊       | 9/32 [00:00<00:02, 10.24it/s] 34%|███▍      | 11/32 [00:01<00:02, 10.30it/s] 41%|████      | 13/32 [00:01<00:01, 10.33it/s] 47%|████▋     | 15/32 [00:01<00:01, 10.32it/s] 53%|█████▎    | 17/32 [00:01<00:01, 10.34it/s] 59%|█████▉    | 19/32 [00:01<00:01, 10.37it/s] 66%|██████▌   | 21/32 [00:02<00:01, 10.36it/s] 72%|███████▏  | 23/32 [00:02<00:00, 10.33it/s] 78%|███████▊  | 25/32 [00:02<00:00, 10.37it/s] 84%|████████▍ | 27/32 [00:02<00:00, 10.54it/s] 91%|█████████ | 29/32 [00:02<00:00, 10.84it/s] 97%|█████████▋| 31/32 [00:02<00:00, 10.61it/s]100%|██████████| 32/32 [00:03<00:00, 10.39it/s]
+warmup start
+warmup done
+[torch] avg 698.0236 ms, min 695.1489 ms, max 701.7937 ms (50 runs, 50 warmups, profiled)

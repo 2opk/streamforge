@@ -1,0 +1,522 @@
+model='roco' system='our' seqlen=4096 layer_num=None
+input_names=['q', 'k', 'v']
+output_names=['out', 'roco_score', 'roco_sq_score']
+graph main_graph (
+  %q[FLOAT16, 1x4096x32x128]
+  %k[FLOAT16, 1x4096x32x128]
+  %v[FLOAT16, 1x4096x32x128]
+) {
+  %/Constant_output_0 = Constant[value = <Tensor>]()
+  %/Constant_1_output_0 = Constant[value = <Scalar Tensor []>]()
+  %/Trilu_output_0 = Trilu[upper = 1](%/Constant_output_0, %/Constant_1_output_0)
+  %/Transpose_output_0 = Transpose[perm = [0, 2, 1, 3]](%q)
+  %/Transpose_1_output_0 = Transpose[perm = [0, 2, 1, 3]](%v)
+  %/Transpose_2_output_0 = Transpose[perm = [0, 2, 3, 1]](%k)
+  %/MatMul_output_0 = MatMul(%/Transpose_output_0, %/Transpose_2_output_0)
+  %/Constant_2_output_0 = Constant[value = <Scalar Tensor []>]()
+  %/Div_output_0 = Div(%/MatMul_output_0, %/Constant_2_output_0)
+  %/Add_output_0 = Add(%/Div_output_0, %/Trilu_output_0)
+  %/Cast_output_0 = Cast[to = 1](%/Add_output_0)
+  %/Softmax_output_0 = Softmax[axis = -1](%/Cast_output_0)
+  %/Cast_1_output_0 = Cast[to = 10](%/Softmax_output_0)
+  %/MatMul_1_output_0 = MatMul(%/Cast_1_output_0, %/Transpose_1_output_0)
+  %/Transpose_3_output_0 = Transpose[perm = [0, 2, 1, 3]](%/MatMul_1_output_0)
+  %/Constant_3_output_0 = Constant[value = <Scalar Tensor []>]()
+  %/Pow_output_0 = Pow(%/Softmax_output_0, %/Constant_3_output_0)
+  %onnx::ReduceSum_23 = Constant[value = <Tensor>]()
+  %/ReduceSum_output_0 = ReduceSum[keepdims = 0](%/Softmax_output_0, %onnx::ReduceSum_23)
+  %/ReduceSum_1_output_0 = ReduceSum[keepdims = 0](%/Pow_output_0, %onnx::ReduceSum_23)
+  %/Constant_4_output_0 = Constant[value = <Tensor>]()
+  %out = Reshape[allowzero = 0](%/Transpose_3_output_0, %/Constant_4_output_0)
+  %/Constant_5_output_0 = Constant[value = <Tensor>]()
+  %/Constant_6_output_0 = Constant[value = <Tensor>]()
+  %roco_score = Reshape[allowzero = 0](%/ReduceSum_output_0, %/Constant_5_output_0)
+  %roco_sq_score = Reshape[allowzero = 0](%/ReduceSum_1_output_0, %/Constant_6_output_0)
+  return %out, %roco_score, %roco_sq_score
+}
+/home/ppopp25_ae/ppopp25_ae/3rd/asuka/python/asuka/translate.py:217: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at ../torch/csrc/utils/tensor_numpy.cpp:206.)
+  operand_torch = torch.from_numpy(operand)
+module {
+  func.func @RoCo(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>) -> (tensor<1x4096x32x128xf16>, tensor<1x32x4096xf32>, tensor<1x32x4096xf32>) {
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg2, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %cst = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %5 = asuka.div %4, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.softmax %7, dim = -1 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.convert %8, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %10 = asuka.dot %9, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %11 = asuka.permute %10, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    %cst_0 = arith.constant dense<2.000000e+00> : tensor<1xf32>
+    %12 = asuka.pow %8, %cst_0 : (tensor<1x32x4096x4096xf32>, tensor<1xf32>) -> tensor<1x32x4096x4096xf32>
+    %13 = asuka.reduce(%8), dim = 2, op =  ADD, keep_dim = false : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096xf32>
+    %14 = asuka.reduce(%12), dim = 2, op =  ADD, keep_dim = false : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096xf32>
+    %15 = asuka.reshape %11 : (tensor<1x4096x32x128xf16>) -> tensor<1x4096x32x128xf16>
+    %16 = asuka.reshape %13 : (tensor<1x32x4096xf32>) -> tensor<1x32x4096xf32>
+    %17 = asuka.reshape %14 : (tensor<1x32x4096xf32>) -> tensor<1x32x4096xf32>
+    return %15, %16, %17 : tensor<1x4096x32x128xf16>, tensor<1x32x4096xf32>, tensor<1x32x4096xf32>
+  }
+}
+idx=0 arith.constant
+idx=1 arith.constant
+idx=2 asuka.trilu
+idx=3 asuka.permute
+idx=4 asuka.permute
+idx=5 asuka.permute
+idx=6 asuka.dot
+idx=7 asuka.div
+idx=8 asuka.add
+idx=9 asuka.convert
+idx=10 asuka.exp
+idx=11 asuka.reduce
+idx=12 asuka.div
+idx=13 asuka.convert
+idx=14 asuka.dot
+idx=15 asuka.permute
+idx=16 asuka.pow
+idx=17 asuka.reduce
+idx=18 asuka.reduce
+len(connected_partitions)=3130
+pruning bad partition(provide_output=False):   0%|          | 0/3130 [00:00<?, ?it/s]pruning bad partition(provide_output=False):   5%|▌         | 168/3130 [00:00<00:01, 1677.03it/s]pruning bad partition(provide_output=False):  11%|█         | 336/3130 [00:00<00:01, 1622.36it/s]pruning bad partition(provide_output=False):  16%|█▌        | 503/3130 [00:00<00:01, 1639.88it/s]pruning bad partition(provide_output=False):  22%|██▏       | 679/3130 [00:00<00:01, 1685.98it/s]pruning bad partition(provide_output=False):  27%|██▋       | 852/3130 [00:00<00:01, 1701.50it/s]pruning bad partition(provide_output=False):  33%|███▎      | 1024/3130 [00:00<00:01, 1706.49it/s]pruning bad partition(provide_output=False):  38%|███▊      | 1201/3130 [00:00<00:01, 1723.58it/s]pruning bad partition(provide_output=False):  44%|████▍     | 1380/3130 [00:00<00:01, 1744.52it/s]pruning bad partition(provide_output=False):  50%|████▉     | 1555/3130 [00:00<00:00, 1692.34it/s]pruning bad partition(provide_output=False):  55%|█████▌    | 1725/3130 [00:01<00:00, 1673.74it/s]pruning bad partition(provide_output=False):  60%|██████    | 1893/3130 [00:01<00:00, 1645.83it/s]pruning bad partition(provide_output=False):  66%|██████▌   | 2070/3130 [00:01<00:00, 1682.15it/s]pruning bad partition(provide_output=False):  72%|███████▏  | 2248/3130 [00:01<00:00, 1709.61it/s]pruning bad partition(provide_output=False):  78%|███████▊  | 2432/3130 [00:01<00:00, 1745.60it/s]pruning bad partition(provide_output=False):  83%|████████▎ | 2612/3130 [00:01<00:00, 1760.93it/s]pruning bad partition(provide_output=False):  89%|████████▉ | 2789/3130 [00:01<00:00, 1760.26it/s]pruning bad partition(provide_output=False):  95%|█████████▌| 2975/3130 [00:01<00:00, 1786.54it/s]pruning bad partition(provide_output=False): 100%|██████████| 3130/3130 [00:01<00:00, 1724.59it/s]
+after pruning bad partition: len(connected_partitions)=248
+pruning bad para partition:   0%|          | 0/248 [00:00<?, ?it/s]pruning bad para partition:  21%|██▏       | 53/248 [00:00<00:00, 511.85it/s]pruning bad para partition:  42%|████▏     | 105/248 [00:00<00:00, 500.52it/s]pruning bad para partition:  63%|██████▎   | 156/248 [00:00<00:00, 488.01it/s]pruning bad para partition:  85%|████████▍ | 210/248 [00:00<00:00, 506.98it/s]pruning bad para partition: 100%|██████████| 248/248 [00:00<00:00, 499.11it/s]
+after pruning bad para partition: len(connected_partitions)=98
+max_metric:  536870912.0
+tall_and_thin tensors: 9
+expand and pruning bad ai partition:   0%|          | 0/98 [00:00<?, ?it/s]expand and pruning bad ai partition:   5%|▌         | 5/98 [00:00<00:10,  9.18it/s]expand and pruning bad ai partition:  14%|█▍        | 14/98 [00:00<00:03, 25.57it/s]expand and pruning bad ai partition:  34%|███▎      | 33/98 [00:00<00:01, 58.92it/s]expand and pruning bad ai partition:  44%|████▍     | 43/98 [00:00<00:00, 65.70it/s]expand and pruning bad ai partition:  61%|██████    | 60/98 [00:01<00:00, 88.60it/s]expand and pruning bad ai partition:  73%|███████▎  | 72/98 [00:01<00:00, 49.34it/s]expand and pruning bad ai partition:  83%|████████▎ | 81/98 [00:02<00:00, 25.79it/s]expand and pruning bad ai partition:  97%|█████████▋| 95/98 [00:02<00:00, 30.23it/s]expand and pruning bad ai partition: 100%|██████████| 98/98 [00:02<00:00, 36.81it/s]
+after expand and pruning bad ai partition: len(connected_partitions)=18
+pruning bad partition(provide_output=True):   0%|          | 0/18 [00:00<?, ?it/s]pruning bad partition(provide_output=True): 100%|██████████| 18/18 [00:00<00:00, 2167.79it/s]
+after pruning bad partition(provide_output=True): len(connected_partitions)=7
+module {
+  func.func @RoCo(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>) -> (tensor<1x4096x32x128xf16>, tensor<1x32x4096xf32>, tensor<1x32x4096xf32>) {
+    %cst = arith.constant dense<2.000000e+00> : tensor<1xf32>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg2, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.exp %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.reduce(%8), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %10 = asuka.div %8, %9 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.convert %10, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %12 = asuka.dot %11, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %13 = asuka.permute %12, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    %14 = asuka.pow %10, %cst : (tensor<1x32x4096x4096xf32>, tensor<1xf32>) -> tensor<1x32x4096x4096xf32>
+    %15 = asuka.reduce(%10), dim = 2, op =  ADD, keep_dim = false : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096xf32>
+    %16 = asuka.reduce(%14), dim = 2, op =  ADD, keep_dim = false : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096xf32>
+    return %13, %15, %16 : tensor<1x4096x32x128xf16>, tensor<1x32x4096xf32>, tensor<1x32x4096xf32>
+  }
+  asuka.kernel @RoCo_p0(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>) -> tensor<1x4096x32x128xf16> {
+    %cst = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg2, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.exp %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.reduce(%8), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %10 = asuka.div %8, %9 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.convert %10, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %12 = asuka.dot %11, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %13 = asuka.permute %12, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    asuka.return %13 : tensor<1x4096x32x128xf16>
+  }
+  asuka.kernel @RoCo_p1(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x32x4096x1xf32>) -> tensor<1x32x4096xf32> {
+    %cst = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %3 = asuka.dot %1, %2 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %4 = asuka.div %3, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.add %4, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.convert %5, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %7 = asuka.exp %6 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.div %7, %arg2 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.reduce(%8), dim = 2, op =  ADD, keep_dim = false : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096xf32>
+    asuka.return %9 : tensor<1x32x4096xf32>
+  }
+  asuka.kernel @RoCo_p2(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>, %arg3: tensor<1x32x4096x1xf32>) -> tensor<1x4096x32x128xf16> {
+    %cst = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg2, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.exp %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.div %8, %arg3 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %10 = asuka.convert %9, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %11 = asuka.dot %10, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %12 = asuka.permute %11, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    asuka.return %12 : tensor<1x4096x32x128xf16>
+  }
+  asuka.kernel @RoCo_p3(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x32x4096x1xf32>) -> tensor<1x32x4096xf32> {
+    %cst = arith.constant dense<2.000000e+00> : tensor<1xf32>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %3 = asuka.dot %1, %2 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %4 = asuka.div %3, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.add %4, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.convert %5, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %7 = asuka.exp %6 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.div %7, %arg2 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.pow %8, %cst : (tensor<1x32x4096x4096xf32>, tensor<1xf32>) -> tensor<1x32x4096x4096xf32>
+    %10 = asuka.reduce(%9), dim = 2, op =  ADD, keep_dim = false : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096xf32>
+    asuka.return %10 : tensor<1x32x4096xf32>
+  }
+  asuka.kernel @RoCo_p4(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x32x4096x1xf32>) -> (tensor<1x32x4096xf32>, tensor<1x32x4096xf32>) {
+    %cst = arith.constant dense<2.000000e+00> : tensor<1xf32>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %3 = asuka.dot %1, %2 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %4 = asuka.div %3, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.add %4, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.convert %5, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %7 = asuka.exp %6 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.div %7, %arg2 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.pow %8, %cst : (tensor<1x32x4096x4096xf32>, tensor<1xf32>) -> tensor<1x32x4096x4096xf32>
+    %10 = asuka.reduce(%8), dim = 2, op =  ADD, keep_dim = false : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096xf32>
+    %11 = asuka.reduce(%9), dim = 2, op =  ADD, keep_dim = false : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096xf32>
+    asuka.return %10, %11 : tensor<1x32x4096xf32>, tensor<1x32x4096xf32>
+  }
+  asuka.kernel @RoCo_p5(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>) -> (tensor<1x32x4096x1xf32>, tensor<1x4096x32x128xf16>) {
+    %cst = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg2, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.exp %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.reduce(%8), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %10 = asuka.div %8, %9 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.convert %10, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %12 = asuka.dot %11, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %13 = asuka.permute %12, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    asuka.return %9, %13 : tensor<1x32x4096x1xf32>, tensor<1x4096x32x128xf16>
+  }
+  asuka.kernel @RoCo_p6(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x1xf32> {
+    %cst = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %3 = asuka.dot %1, %2 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %4 = asuka.div %3, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.add %4, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.convert %5, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %7 = asuka.exp %6 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.reduce(%7), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    asuka.return %8 : tensor<1x32x4096x1xf32>
+  }
+}
+optimize RoCo_p0
+optimize RoCo_p1
+optimize RoCo_p2
+optimize RoCo_p3
+optimize RoCo_p4
+optimize RoCo_p5
+optimize RoCo_p6
+tuning time: 6.461205959320068 sec
+Skip op: func.func
+path: /tmp/tmpx4cu68xs.py
+profiling...
+out_str='[RoCo_p0] avg_ms: 1.0168182849884033\n[RoCo_p1] avg_ms: 0.6972127556800842\n[RoCo_p2] avg_ms: 0.9654691219329834\n[RoCo_p3] avg_ms: 0.6940226554870605\n[RoCo_p4] avg_ms: 0.7921385765075684\n[RoCo_p5] avg_ms: 0.962397038936615\n[RoCo_p6] avg_ms: 0.6354206800460815\n'
+[RoCo_p0] avg_ms: 1.0168182849884033
+[RoCo_p1] avg_ms: 0.6972127556800842
+[RoCo_p2] avg_ms: 0.9654691219329834
+[RoCo_p3] avg_ms: 0.6940226554870605
+[RoCo_p4] avg_ms: 0.7921385765075684
+[RoCo_p5] avg_ms: 0.962397038936615
+[RoCo_p6] avg_ms: 0.6354206800460815
+best_kernel:
+
+RoCo_p5
+RoCo_p4
+best_time=1.7545356154441833
+import math
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import triton
+import triton.language as tl
+from typing import Callable, Any, Optional, Tuple
+
+def bench_RoCo_p5():
+  dev = torch.cuda.current_device()
+  rand_arg_0 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  rand_arg_1 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  rand_arg_2 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  avg_ms = triton.testing.do_bench(lambda: RoCo_p5(rand_arg_0, rand_arg_1, rand_arg_2))
+  print('[RoCo_p5] avg_ms:', avg_ms)
+
+def RoCo_p5(arg0: torch.Tensor, arg1: torch.Tensor, arg2: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+  dev = arg0.device
+  autotune_key = torch.cuda.get_device_capability(dev)[0]
+  tensor_0 = arg0
+  tensor_1 = arg1
+  tensor_2 = arg2
+  empty_ptr_3 = torch.empty(1, 32, 4096, 1, dtype=torch.float32, device=dev)
+  empty_ptr_4 = torch.empty(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  grid = (1, 32, 32)
+  RoCo_p5_kernel[grid](tensor_0, tensor_1, tensor_2, empty_ptr_3, empty_ptr_4, autotune_key)
+  tensor_5 = empty_ptr_3
+  tensor_6 = empty_ptr_4
+  return tensor_5, tensor_6
+
+@triton.autotune(configs=[
+  triton.Config({}, num_warps=4),
+  triton.Config({}, num_warps=8),
+], key=['autotune_key'])
+@triton.jit
+def RoCo_p5_kernel(
+  arg_0,
+  arg_1,
+  arg_2,
+  arg_3,
+  arg_4,
+  autotune_key,
+):
+  pid_5 = tl.program_id(0)
+  pid_6 = tl.program_id(1)
+  pid_7 = tl.program_id(2)
+  const_8 = 1.275311e-01
+  const_9 = float('-inf')
+  const_10 = 0.000000e+00
+  const_11 = 0
+  const_12 = 1
+  const_13 = 4096
+  const_14 = 128
+  mul_15 = pid_6 * const_14
+  mul_16 = mul_15 * const_13
+  mul_17 = pid_7 * const_14
+  add_18 = mul_16 + mul_17
+  block_ptr_19 = tl.make_block_ptr(
+    base=arg_0 + add_18,
+    shape=(128, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  block_load_20 = tl.load(block_ptr_19)
+  mul_21 = pid_7 * const_13
+  add_22 = mul_15 + mul_21
+  block_ptr_23 = tl.make_block_ptr(
+    base=arg_3 + add_22,
+    shape=(128, 1,),
+    strides=(1, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 1,),
+    order=(1, 0,),
+  )
+  block_ptr_24 = tl.make_block_ptr(
+    base=arg_4 + add_18,
+    shape=(128, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  converted_25 = const_8
+  mul_26 = block_load_20 * converted_25
+  mul_26 = mul_26.to(tl.float16)
+  zero_27 = tl.zeros([128, 128], dtype=tl.float32)
+  zero_28 = tl.zeros([128, 1], dtype=tl.float32)
+  add_29 = mul_15 + const_14
+  block_ptr_30 = tl.make_block_ptr(
+    base=arg_2 + mul_17,
+    shape=(128, 4096,),
+    strides=(1, 4096,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(0, 1,),
+  )
+  block_ptr_31 = tl.make_block_ptr(
+    base=arg_1 + mul_17,
+    shape=(4096, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  for i_32 in range(const_11, add_29, const_14):
+    block_load_33 = tl.load(block_ptr_30)
+    block_load_34 = tl.load(block_ptr_31)
+    dot_35 = tl.dot(mul_26, block_load_33)
+    where_36 = tl.zeros([128, 128], dtype=tl.float32)
+    where_36 = tl.where(mul_15 + tl.arange(0, 128)[:, None] >= i_32 + tl.arange(0, 128)[None, :], where_36, float('-inf'))
+    add_37 = dot_35 + where_36
+    exp2_38 = tl.math.exp2(add_37)
+    reduce_sum_39 = tl.sum(exp2_38, axis=1, keep_dims=True).to(tl.float32)
+    reduce_sum_39 += zero_28
+    converted_40 = exp2_38.to(tl.float16)
+    dot_41 = tl.dot(converted_40, block_load_34)
+    add_42 = zero_27 + dot_41
+    block_advance_43 = tl.advance(block_ptr_30, (0, 128,))
+    block_advance_44 = tl.advance(block_ptr_31, (128, 0,))
+    block_ptr_30 = block_advance_43
+    block_ptr_31 = block_advance_44
+    zero_27 = add_42
+    zero_28 = reduce_sum_39
+  div_45 = zero_27 / zero_28
+  converted_46 = div_45.to(tl.float16)
+  block_store_47 = tl.store(block_ptr_23, zero_28)
+  block_store_48 = tl.store(block_ptr_24, converted_46)
+
+def bench_RoCo_p4():
+  dev = torch.cuda.current_device()
+  rand_arg_0 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  rand_arg_1 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  rand_arg_2 = torch.randn(1, 32, 4096, 1, dtype=torch.float32, device=dev)
+  avg_ms = triton.testing.do_bench(lambda: RoCo_p4(rand_arg_0, rand_arg_1, rand_arg_2))
+  print('[RoCo_p4] avg_ms:', avg_ms)
+
+def RoCo_p4(arg0: torch.Tensor, arg1: torch.Tensor, arg2: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+  dev = arg0.device
+  autotune_key = torch.cuda.get_device_capability(dev)[0]
+  tensor_0 = arg0
+  tensor_1 = arg1
+  tensor_2 = arg2
+  empty_ptr_3 = torch.empty(1, 32, 4096, dtype=torch.float32, device=dev)
+  empty_ptr_4 = torch.empty(1, 32, 4096, dtype=torch.float32, device=dev)
+  grid = (1, 32, 32)
+  RoCo_p4_kernel[grid](tensor_0, tensor_1, tensor_2, empty_ptr_3, empty_ptr_4, autotune_key)
+  tensor_5 = empty_ptr_3
+  tensor_6 = empty_ptr_4
+  return tensor_5, tensor_6
+
+@triton.autotune(configs=[
+  triton.Config({}, num_warps=4),
+  triton.Config({}, num_warps=8),
+], key=['autotune_key'])
+@triton.jit
+def RoCo_p4_kernel(
+  arg_0,
+  arg_1,
+  arg_2,
+  arg_3,
+  arg_4,
+  autotune_key,
+):
+  pid_5 = tl.program_id(0)
+  pid_6 = tl.program_id(1)
+  pid_7 = tl.program_id(2)
+  const_8 = 2.000000e+00
+  const_9 = 1.275311e-01
+  const_10 = float('-inf')
+  const_11 = 0.000000e+00
+  const_12 = 4096
+  const_13 = 128
+  const_14 = 1
+  mul_15 = pid_7 * const_13
+  mul_16 = pid_6 * const_13
+  mul_17 = mul_16 * const_12
+  add_18 = mul_17 + mul_15
+  block_ptr_19 = tl.make_block_ptr(
+    base=arg_1 + add_18,
+    shape=(128, 128,),
+    strides=(1, 4096,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(0, 1,),
+  )
+  block_load_20 = tl.load(block_ptr_19)
+  mul_21 = pid_7 * const_12
+  add_22 = mul_16 + mul_21
+  block_ptr_23 = tl.make_block_ptr(
+    base=arg_3 + add_22,
+    shape=(128,),
+    strides=(1,),
+    offsets=(0,),
+    block_shape=(128,),
+    order=(0,),
+  )
+  block_ptr_24 = tl.make_block_ptr(
+    base=arg_4 + add_22,
+    shape=(128,),
+    strides=(1,),
+    offsets=(0,),
+    block_shape=(128,),
+    order=(0,),
+  )
+  converted_25 = const_9
+  mul_26 = block_load_20 * converted_25
+  mul_26 = mul_26.to(tl.float16)
+  zero_27 = tl.zeros([128], dtype=tl.float32)
+  zero_28 = tl.zeros([128], dtype=tl.float32)
+  block_ptr_29 = tl.make_block_ptr(
+    base=arg_0 + add_18,
+    shape=(4096, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  block_ptr_30 = tl.make_block_ptr(
+    base=arg_2 + add_22,
+    shape=(4096,),
+    strides=(1,),
+    offsets=(0,),
+    block_shape=(128,),
+    order=(0,),
+  )
+  for i_31 in range(mul_16, const_12, const_13):
+    block_load_32 = tl.load(block_ptr_29)
+    block_load_33 = tl.load(block_ptr_30)
+    where_34 = tl.zeros([128, 128], dtype=tl.float32)
+    where_34 = tl.where(i_31 + tl.arange(0, 128)[:, None] >= mul_16 + tl.arange(0, 128)[None, :], where_34, float('-inf'))
+    dot_35 = tl.dot(block_load_32, mul_26)
+    add_36 = dot_35 + where_34
+    exp2_37 = tl.math.exp2(add_36)
+    unsqueeze_38 = block_load_33[:, None]
+    div_39 = exp2_37 / unsqueeze_38
+    square_41 = div_39 * div_39
+    reduce_sum_42 = tl.sum(div_39, axis=0, keep_dims=False).to(tl.float32)
+    reduce_sum_42 += zero_27
+    reduce_sum_43 = tl.sum(square_41, axis=0, keep_dims=False).to(tl.float32)
+    reduce_sum_43 += zero_28
+    block_advance_44 = tl.advance(block_ptr_29, (128, 0,))
+    block_advance_45 = tl.advance(block_ptr_30, (128,))
+    block_ptr_29 = block_advance_44
+    block_ptr_30 = block_advance_45
+    zero_27 = reduce_sum_42
+    zero_28 = reduce_sum_43
+  block_store_46 = tl.store(block_ptr_23, zero_27)
+  block_store_47 = tl.store(block_ptr_24, zero_28)
+
+def RoCo(arg_0, arg_1, arg_2):
+  k0_out_0, k0_out_1 = RoCo_p5(arg_0, arg_2, arg_1)
+  k1_out_0, k1_out_1 = RoCo_p4(arg_0, arg_1, k0_out_0)
+  return k0_out_1, k1_out_0, k1_out_1
+
+write code to /tmp/tmp24ctix5c.py
+weight_zoo_path='/home/ppopp25_ae/ppopp25_ae/weight_zoo.json'
+hf_config.num_hidden_layers=32
+data_path='/home/ppopp25_ae/ppopp25_ae/vcsum.jsonl'
+token_ids.shape=torch.Size([1, 4096])
+token_ids.grad=None
+using safe tensor: files={'model-00002-of-00002.safetensors', 'model-00001-of-00002.safetensors'}
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 84.98it/s]
+  0%|          | 0/32 [00:00<?, ?it/s]  3%|▎         | 1/32 [00:00<00:04,  7.06it/s]  6%|▋         | 2/32 [00:00<00:04,  7.15it/s]  9%|▉         | 3/32 [00:00<00:04,  6.99it/s] 12%|█▎        | 4/32 [00:00<00:04,  6.86it/s] 16%|█▌        | 5/32 [00:00<00:04,  6.69it/s] 19%|█▉        | 6/32 [00:00<00:03,  6.58it/s] 22%|██▏       | 7/32 [00:01<00:03,  6.45it/s] 25%|██▌       | 8/32 [00:01<00:03,  6.34it/s] 28%|██▊       | 9/32 [00:01<00:03,  6.39it/s] 31%|███▏      | 10/32 [00:01<00:03,  6.56it/s] 34%|███▍      | 11/32 [00:01<00:03,  6.82it/s] 38%|███▊      | 12/32 [00:01<00:02,  6.97it/s] 41%|████      | 13/32 [00:01<00:02,  7.25it/s] 44%|████▍     | 14/32 [00:02<00:02,  7.50it/s] 47%|████▋     | 15/32 [00:02<00:02,  7.65it/s] 50%|█████     | 16/32 [00:02<00:02,  7.72it/s] 53%|█████▎    | 17/32 [00:02<00:01,  7.67it/s] 56%|█████▋    | 18/32 [00:02<00:01,  7.47it/s] 59%|█████▉    | 19/32 [00:02<00:01,  7.14it/s] 62%|██████▎   | 20/32 [00:02<00:01,  6.96it/s] 66%|██████▌   | 21/32 [00:03<00:01,  6.78it/s] 69%|██████▉   | 22/32 [00:03<00:01,  6.76it/s] 72%|███████▏  | 23/32 [00:03<00:01,  6.66it/s] 75%|███████▌  | 24/32 [00:03<00:01,  6.60it/s] 78%|███████▊  | 25/32 [00:03<00:01,  6.43it/s] 81%|████████▏ | 26/32 [00:03<00:00,  6.33it/s] 84%|████████▍ | 27/32 [00:03<00:00,  6.30it/s] 88%|████████▊ | 28/32 [00:04<00:00,  6.23it/s] 91%|█████████ | 29/32 [00:04<00:00,  6.10it/s] 94%|█████████▍| 30/32 [00:04<00:00,  6.03it/s] 97%|█████████▋| 31/32 [00:04<00:00,  5.97it/s]100%|██████████| 32/32 [00:04<00:00,  6.03it/s]100%|██████████| 32/32 [00:04<00:00,  6.66it/s]
+warmup start
+warmup done
+[our] avg 315.3225 ms, min 311.7266 ms, max 321.1939 ms (50 runs, 50 warmups, profiled)

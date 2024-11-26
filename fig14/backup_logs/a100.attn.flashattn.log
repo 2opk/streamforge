@@ -1,0 +1,13 @@
+model='attn' system='flashattn' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=128.50048828125
+gflops=137.438953472
+mib=128.50048828125
+checking flashattn...
+out loss: {'abs_max': 0.001953125, 'abs_mean': 2.5650643003416462e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 1663.0, 'nz_rel_mean': 0.005989110156604581, 'mse': 2.0060526837026296e-09, 'rmse': 4.4788979489408214e-05}
+warmup start
+warmup done
+[flashattn] avg 1.3990 ms, min 1.3611 ms, max 1.4408 ms, 98243.05133245114 gflops/s (10 runs, 100 warmups, profiled)

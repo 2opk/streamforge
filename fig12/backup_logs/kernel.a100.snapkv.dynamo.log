@@ -1,0 +1,14 @@
+model='snapkv' system='dynamo' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out', 'snapkv_score']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=2397.265625
+gflops=137.438953472
+mib=2397.265625
+checking dynamo...
+out loss: {'abs_max': 0.001953125, 'abs_mean': 1.96095121012263e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 765.0, 'nz_rel_mean': 0.004503831692800552, 'mse': 1.3134914795580934e-09, 'rmse': 3.6242123000151266e-05}
+snapkv_score loss: {'abs_max': 0.00023698806762695312, 'abs_mean': 6.1226962270177765e-06, 'rel_max': 0.0006285487109234719, 'rel_mean': 8.533008016484677e-06, 'nz_rel_max': 0.0006285487109234719, 'nz_rel_mean': 8.533008016484677e-06, 'mse': 1.2710593787567683e-10, 'rmse': 1.1274126922989506e-05}
+warmup start
+warmup done
+[dynamo] avg 5.5348 ms, min 5.5025 ms, max 5.5966 ms, 24831.71233328122 gflops/s (10 runs, 100 warmups, profiled)

@@ -1,0 +1,15 @@
+srun: job 181829 queued and waiting for resources
+srun: job 181829 has been allocated resources
+model='gemma2' system='flashattn' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=128.50048828125
+gflops=137.438953472
+mib=128.50048828125
+checking flashattn...
+out loss: {'abs_max': 0.00341796875, 'abs_mean': 3.90235422607077e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 1002.0, 'nz_rel_mean': 0.008937602393399595, 'mse': 4.18217340982135e-09, 'rmse': 6.466972560496411e-05}
+warmup start
+warmup done
+[flashattn] avg 1.7916 ms, min 1.7669 ms, max 1.8220 ms, 76713.12160535279 gflops/s (10 runs, 100 warmups, profiled)

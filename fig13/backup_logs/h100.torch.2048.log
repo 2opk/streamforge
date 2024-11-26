@@ -1,0 +1,16 @@
+srun: job 5075 queued and waiting for resources
+srun: job 5075 has been allocated resources
+model='h2o' system='torch' seqlen=2048
+input_names=['q', 'k', 'v']
+output_names=['out', 'h2o_score']
+check=True
+start_peak_mem_mib=48.0
+end_peak_mem_mib=1368.0
+gflops=34.359738368
+mib=1368.0
+checking torch...
+out loss: {'abs_max': 0.0, 'abs_mean': 0.0, 'rel_max': nan, 'rel_mean': nan, 'nz_rel_max': 0.0, 'nz_rel_mean': 0.0, 'mse': 0.0, 'rmse': 0.0}
+h2o_score loss: {'abs_max': 0.0, 'abs_mean': 0.0, 'rel_max': 0.0, 'rel_mean': 0.0, 'nz_rel_max': 0.0, 'nz_rel_mean': 0.0, 'mse': 0.0, 'rmse': 0.0}
+warmup start
+warmup done
+[torch] avg 3.3103 ms, min 3.2909 ms, max 3.4347 ms, 10379.797761185799 gflops/s (10 runs, 100 warmups, profiled)

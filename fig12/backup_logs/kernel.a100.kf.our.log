@@ -1,0 +1,834 @@
+model='kf' system='our' seqlen=4096
+input_names=['q', 'k', 'v', 'exp_rand']
+output_names=['out', 'kf_score']
+check=True
+graph main_graph (
+  %q[FLOAT16, 1x4096x32x128]
+  %k[FLOAT16, 1x4096x32x128]
+  %v[FLOAT16, 1x4096x32x128]
+  %exp_rand[FLOAT, 1x32x4096x4096]
+) {
+  %/Constant_output_0 = Constant[value = <Tensor>]()
+  %/Constant_1_output_0 = Constant[value = <Scalar Tensor []>]()
+  %/Trilu_output_0 = Trilu[upper = 1](%/Constant_output_0, %/Constant_1_output_0)
+  %/Transpose_output_0 = Transpose[perm = [0, 2, 1, 3]](%q)
+  %/Transpose_1_output_0 = Transpose[perm = [0, 2, 1, 3]](%v)
+  %/Transpose_2_output_0 = Transpose[perm = [0, 2, 3, 1]](%k)
+  %/MatMul_output_0 = MatMul(%/Transpose_output_0, %/Transpose_2_output_0)
+  %/Constant_2_output_0 = Constant[value = <Scalar Tensor []>]()
+  %/Div_output_0 = Div(%/MatMul_output_0, %/Constant_2_output_0)
+  %/Add_output_0 = Add(%/Div_output_0, %/Trilu_output_0)
+  %/Cast_output_0 = Cast[to = 1](%/Add_output_0)
+  %/Softmax_output_0 = Softmax[axis = -1](%/Cast_output_0)
+  %/Cast_1_output_0 = Cast[to = 10](%/Softmax_output_0)
+  %/MatMul_1_output_0 = MatMul(%/Cast_1_output_0, %/Transpose_1_output_0)
+  %/Transpose_3_output_0 = Transpose[perm = [0, 2, 1, 3]](%/MatMul_1_output_0)
+  %/Log_output_0 = Log(%exp_rand)
+  %/Neg_output_0 = Neg(%/Log_output_0)
+  %/Cast_2_output_0 = Cast[to = 1](%/Add_output_0)
+  %/Add_1_output_0 = Add(%/Cast_2_output_0, %/Neg_output_0)
+  %/Constant_3_output_0 = Constant[value = <Scalar Tensor []>]()
+  %/Div_1_output_0 = Div(%/Add_1_output_0, %/Constant_3_output_0)
+  %/Cast_3_output_0 = Cast[to = 1](%/Div_1_output_0)
+  %/Softmax_1_output_0 = Softmax[axis = -1](%/Cast_3_output_0)
+  %onnx::ReduceSum_30 = Constant[value = <Tensor>]()
+  %/ReduceSum_output_0 = ReduceSum[keepdims = 0](%/Softmax_1_output_0, %onnx::ReduceSum_30)
+  %/Constant_4_output_0 = Constant[value = <Tensor>]()
+  %out = Reshape[allowzero = 0](%/Transpose_3_output_0, %/Constant_4_output_0)
+  %/Constant_5_output_0 = Constant[value = <Tensor>]()
+  %kf_score = Reshape[allowzero = 0](%/ReduceSum_output_0, %/Constant_5_output_0)
+  return %out, %kf_score
+}
+/home/ppopp25_ae/ppopp25_ae/3rd/asuka/python/asuka/translate.py:217: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at ../torch/csrc/utils/tensor_numpy.cpp:206.)
+  operand_torch = torch.from_numpy(operand)
+module {
+  func.func @KeyFormer(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>, %arg3: tensor<1x32x4096x4096xf32>) -> (tensor<1x4096x32x128xf16>, tensor<1x32x4096xf32>) {
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg2, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %cst = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %5 = asuka.div %4, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.softmax %7, dim = -1 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.convert %8, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %10 = asuka.dot %9, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %11 = asuka.permute %10, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    %12 = asuka.log %arg3 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %13 = asuka.neg %12 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %14 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %15 = asuka.add %14, %13 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %cst_0 = arith.constant dense<1.500000e+00> : tensor<1xf32>
+    %16 = asuka.div %15, %cst_0 : (tensor<1x32x4096x4096xf32>, tensor<1xf32>) -> tensor<1x32x4096x4096xf32>
+    %17 = asuka.convert %16, type = f32 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %18 = asuka.softmax %17, dim = -1 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %19 = asuka.reduce(%18), dim = 2, op =  ADD, keep_dim = false : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096xf32>
+    %20 = asuka.reshape %11 : (tensor<1x4096x32x128xf16>) -> tensor<1x4096x32x128xf16>
+    %21 = asuka.reshape %19 : (tensor<1x32x4096xf32>) -> tensor<1x32x4096xf32>
+    return %20, %21 : tensor<1x4096x32x128xf16>, tensor<1x32x4096xf32>
+  }
+}
+idx=0 arith.constant
+idx=1 arith.constant
+idx=2 asuka.trilu
+idx=3 asuka.permute
+idx=4 asuka.permute
+idx=5 asuka.permute
+idx=6 asuka.dot
+idx=7 asuka.div
+idx=8 asuka.add
+idx=9 asuka.convert
+idx=10 asuka.exp
+idx=11 asuka.reduce
+idx=12 asuka.div
+idx=13 asuka.convert
+idx=14 asuka.dot
+idx=15 asuka.permute
+idx=16 asuka.log
+idx=17 asuka.neg
+idx=18 asuka.add
+idx=19 asuka.div
+idx=20 asuka.exp
+idx=21 asuka.reduce
+idx=22 asuka.div
+idx=23 asuka.reduce
+len(connected_partitions)=16023
+pruning bad partition(provide_output=False):   0%|          | 0/16023 [00:00<?, ?it/s]pruning bad partition(provide_output=False):   1%|          | 148/16023 [00:00<00:10, 1473.18it/s]pruning bad partition(provide_output=False):   2%|▏         | 296/16023 [00:00<00:10, 1475.20it/s]pruning bad partition(provide_output=False):   3%|▎         | 444/16023 [00:00<00:10, 1470.41it/s]pruning bad partition(provide_output=False):   4%|▎         | 592/16023 [00:00<00:10, 1472.66it/s]pruning bad partition(provide_output=False):   5%|▍         | 740/16023 [00:00<00:10, 1467.09it/s]pruning bad partition(provide_output=False):   6%|▌         | 887/16023 [00:00<00:10, 1464.47it/s]pruning bad partition(provide_output=False):   6%|▋         | 1034/16023 [00:00<00:10, 1459.87it/s]pruning bad partition(provide_output=False):   7%|▋         | 1184/16023 [00:00<00:10, 1471.84it/s]pruning bad partition(provide_output=False):   8%|▊         | 1334/16023 [00:00<00:09, 1479.71it/s]pruning bad partition(provide_output=False):   9%|▉         | 1482/16023 [00:01<00:09, 1472.19it/s]pruning bad partition(provide_output=False):  10%|█         | 1635/16023 [00:01<00:09, 1487.48it/s]pruning bad partition(provide_output=False):  11%|█         | 1785/16023 [00:01<00:09, 1488.58it/s]pruning bad partition(provide_output=False):  12%|█▏        | 1941/16023 [00:01<00:09, 1507.90it/s]pruning bad partition(provide_output=False):  13%|█▎        | 2092/16023 [00:01<00:09, 1492.45it/s]pruning bad partition(provide_output=False):  14%|█▍        | 2242/16023 [00:01<00:09, 1485.13it/s]pruning bad partition(provide_output=False):  15%|█▍        | 2391/16023 [00:01<00:09, 1486.00it/s]pruning bad partition(provide_output=False):  16%|█▌        | 2540/16023 [00:01<00:09, 1485.43it/s]pruning bad partition(provide_output=False):  17%|█▋        | 2689/16023 [00:01<00:09, 1479.04it/s]pruning bad partition(provide_output=False):  18%|█▊        | 2839/16023 [00:01<00:08, 1483.48it/s]pruning bad partition(provide_output=False):  19%|█▊        | 2988/16023 [00:02<00:08, 1483.51it/s]pruning bad partition(provide_output=False):  20%|█▉        | 3137/16023 [00:02<00:08, 1472.26it/s]pruning bad partition(provide_output=False):  21%|██        | 3285/16023 [00:02<00:08, 1461.79it/s]pruning bad partition(provide_output=False):  21%|██▏       | 3432/16023 [00:02<00:08, 1449.67it/s]pruning bad partition(provide_output=False):  22%|██▏       | 3577/16023 [00:02<00:08, 1448.06it/s]pruning bad partition(provide_output=False):  23%|██▎       | 3727/16023 [00:02<00:08, 1462.08it/s]pruning bad partition(provide_output=False):  24%|██▍       | 3876/16023 [00:02<00:08, 1470.35it/s]pruning bad partition(provide_output=False):  25%|██▌       | 4024/16023 [00:02<00:08, 1463.80it/s]pruning bad partition(provide_output=False):  26%|██▌       | 4171/16023 [00:02<00:08, 1463.20it/s]pruning bad partition(provide_output=False):  27%|██▋       | 4318/16023 [00:02<00:08, 1462.65it/s]pruning bad partition(provide_output=False):  28%|██▊       | 4466/16023 [00:03<00:07, 1464.27it/s]pruning bad partition(provide_output=False):  29%|██▉       | 4613/16023 [00:03<00:07, 1459.85it/s]pruning bad partition(provide_output=False):  30%|██▉       | 4760/16023 [00:03<00:07, 1460.51it/s]pruning bad partition(provide_output=False):  31%|███       | 4909/16023 [00:03<00:07, 1467.15it/s]pruning bad partition(provide_output=False):  32%|███▏      | 5059/16023 [00:03<00:07, 1474.57it/s]pruning bad partition(provide_output=False):  32%|███▏      | 5207/16023 [00:03<00:07, 1474.14it/s]pruning bad partition(provide_output=False):  33%|███▎      | 5355/16023 [00:03<00:07, 1461.67it/s]pruning bad partition(provide_output=False):  34%|███▍      | 5502/16023 [00:03<00:07, 1453.66it/s]pruning bad partition(provide_output=False):  35%|███▌      | 5648/16023 [00:03<00:07, 1454.02it/s]pruning bad partition(provide_output=False):  36%|███▌      | 5799/16023 [00:03<00:06, 1468.72it/s]pruning bad partition(provide_output=False):  37%|███▋      | 5946/16023 [00:04<00:06, 1462.79it/s]pruning bad partition(provide_output=False):  38%|███▊      | 6093/16023 [00:04<00:06, 1456.20it/s]pruning bad partition(provide_output=False):  39%|███▉      | 6240/16023 [00:04<00:06, 1460.04it/s]pruning bad partition(provide_output=False):  40%|███▉      | 6387/16023 [00:04<00:06, 1460.90it/s]pruning bad partition(provide_output=False):  41%|████      | 6537/16023 [00:04<00:06, 1471.04it/s]pruning bad partition(provide_output=False):  42%|████▏     | 6685/16023 [00:04<00:06, 1468.19it/s]pruning bad partition(provide_output=False):  43%|████▎     | 6835/16023 [00:04<00:06, 1477.25it/s]pruning bad partition(provide_output=False):  44%|████▎     | 6986/16023 [00:04<00:06, 1484.14it/s]pruning bad partition(provide_output=False):  45%|████▍     | 7135/16023 [00:04<00:06, 1480.17it/s]pruning bad partition(provide_output=False):  45%|████▌     | 7284/16023 [00:04<00:05, 1479.52it/s]pruning bad partition(provide_output=False):  46%|████▋     | 7432/16023 [00:05<00:05, 1477.21it/s]pruning bad partition(provide_output=False):  47%|████▋     | 7581/16023 [00:05<00:05, 1478.46it/s]pruning bad partition(provide_output=False):  48%|████▊     | 7730/16023 [00:05<00:05, 1480.91it/s]pruning bad partition(provide_output=False):  49%|████▉     | 7879/16023 [00:05<00:05, 1479.36it/s]pruning bad partition(provide_output=False):  50%|█████     | 8030/16023 [00:05<00:05, 1484.34it/s]pruning bad partition(provide_output=False):  51%|█████     | 8181/16023 [00:05<00:05, 1490.63it/s]pruning bad partition(provide_output=False):  52%|█████▏    | 8331/16023 [00:05<00:05, 1485.45it/s]pruning bad partition(provide_output=False):  53%|█████▎    | 8481/16023 [00:05<00:05, 1488.43it/s]pruning bad partition(provide_output=False):  54%|█████▍    | 8630/16023 [00:05<00:04, 1482.65it/s]pruning bad partition(provide_output=False):  55%|█████▍    | 8779/16023 [00:05<00:04, 1475.16it/s]pruning bad partition(provide_output=False):  56%|█████▌    | 8929/16023 [00:06<00:04, 1480.59it/s]pruning bad partition(provide_output=False):  57%|█████▋    | 9078/16023 [00:06<00:04, 1481.01it/s]pruning bad partition(provide_output=False):  58%|█████▊    | 9227/16023 [00:06<00:04, 1468.50it/s]pruning bad partition(provide_output=False):  59%|█████▊    | 9375/16023 [00:06<00:04, 1471.16it/s]pruning bad partition(provide_output=False):  59%|█████▉    | 9523/16023 [00:06<00:04, 1464.33it/s]pruning bad partition(provide_output=False):  60%|██████    | 9673/16023 [00:06<00:04, 1471.38it/s]pruning bad partition(provide_output=False):  61%|██████▏   | 9821/16023 [00:06<00:04, 1465.58it/s]pruning bad partition(provide_output=False):  62%|██████▏   | 9968/16023 [00:06<00:04, 1462.37it/s]pruning bad partition(provide_output=False):  63%|██████▎   | 10115/16023 [00:06<00:04, 1461.74it/s]pruning bad partition(provide_output=False):  64%|██████▍   | 10262/16023 [00:06<00:03, 1449.30it/s]pruning bad partition(provide_output=False):  65%|██████▍   | 10407/16023 [00:07<00:03, 1443.40it/s]pruning bad partition(provide_output=False):  66%|██████▌   | 10552/16023 [00:07<00:03, 1439.69it/s]pruning bad partition(provide_output=False):  67%|██████▋   | 10696/16023 [00:07<00:03, 1434.07it/s]pruning bad partition(provide_output=False):  68%|██████▊   | 10840/16023 [00:07<00:03, 1432.75it/s]pruning bad partition(provide_output=False):  69%|██████▊   | 10984/16023 [00:07<00:03, 1426.03it/s]pruning bad partition(provide_output=False):  69%|██████▉   | 11127/16023 [00:07<00:03, 1418.43it/s]pruning bad partition(provide_output=False):  70%|███████   | 11269/16023 [00:07<00:03, 1416.32it/s]pruning bad partition(provide_output=False):  71%|███████   | 11416/16023 [00:07<00:03, 1431.09it/s]pruning bad partition(provide_output=False):  72%|███████▏  | 11568/16023 [00:07<00:03, 1456.00it/s]pruning bad partition(provide_output=False):  73%|███████▎  | 11716/16023 [00:07<00:02, 1461.81it/s]pruning bad partition(provide_output=False):  74%|███████▍  | 11866/16023 [00:08<00:02, 1471.72it/s]pruning bad partition(provide_output=False):  75%|███████▍  | 12014/16023 [00:08<00:02, 1454.83it/s]pruning bad partition(provide_output=False):  76%|███████▌  | 12164/16023 [00:08<00:02, 1466.51it/s]pruning bad partition(provide_output=False):  77%|███████▋  | 12312/16023 [00:08<00:02, 1468.21it/s]pruning bad partition(provide_output=False):  78%|███████▊  | 12460/16023 [00:08<00:02, 1469.97it/s]pruning bad partition(provide_output=False):  79%|███████▊  | 12608/16023 [00:08<00:02, 1471.76it/s]pruning bad partition(provide_output=False):  80%|███████▉  | 12758/16023 [00:08<00:02, 1478.24it/s]pruning bad partition(provide_output=False):  81%|████████  | 12906/16023 [00:08<00:02, 1471.02it/s]pruning bad partition(provide_output=False):  81%|████████▏ | 13054/16023 [00:08<00:02, 1468.97it/s]pruning bad partition(provide_output=False):  82%|████████▏ | 13204/16023 [00:08<00:01, 1477.55it/s]pruning bad partition(provide_output=False):  83%|████████▎ | 13354/16023 [00:09<00:01, 1483.47it/s]pruning bad partition(provide_output=False):  84%|████████▍ | 13505/16023 [00:09<00:01, 1490.11it/s]pruning bad partition(provide_output=False):  85%|████████▌ | 13657/16023 [00:09<00:01, 1495.33it/s]pruning bad partition(provide_output=False):  86%|████████▌ | 13807/16023 [00:09<00:01, 1490.95it/s]pruning bad partition(provide_output=False):  87%|████████▋ | 13957/16023 [00:09<00:01, 1483.28it/s]pruning bad partition(provide_output=False):  88%|████████▊ | 14106/16023 [00:09<00:01, 1482.22it/s]pruning bad partition(provide_output=False):  89%|████████▉ | 14255/16023 [00:09<00:01, 1484.33it/s]pruning bad partition(provide_output=False):  90%|████████▉ | 14404/16023 [00:09<00:01, 1480.41it/s]pruning bad partition(provide_output=False):  91%|█████████ | 14553/16023 [00:09<00:00, 1472.69it/s]pruning bad partition(provide_output=False):  92%|█████████▏| 14701/16023 [00:10<00:00, 1469.85it/s]pruning bad partition(provide_output=False):  93%|█████████▎| 14850/16023 [00:10<00:00, 1475.07it/s]pruning bad partition(provide_output=False):  94%|█████████▎| 14999/16023 [00:10<00:00, 1477.30it/s]pruning bad partition(provide_output=False):  95%|█████████▍| 15147/16023 [00:10<00:00, 1457.03it/s]pruning bad partition(provide_output=False):  95%|█████████▌| 15294/16023 [00:10<00:00, 1460.47it/s]pruning bad partition(provide_output=False):  96%|█████████▋| 15446/16023 [00:10<00:00, 1476.30it/s]pruning bad partition(provide_output=False):  97%|█████████▋| 15594/16023 [00:10<00:00, 1472.39it/s]pruning bad partition(provide_output=False):  98%|█████████▊| 15742/16023 [00:10<00:00, 1463.25it/s]pruning bad partition(provide_output=False):  99%|█████████▉| 15889/16023 [00:10<00:00, 1464.52it/s]pruning bad partition(provide_output=False): 100%|██████████| 16023/16023 [00:10<00:00, 1468.90it/s]
+after pruning bad partition: len(connected_partitions)=974
+pruning bad para partition:   0%|          | 0/974 [00:00<?, ?it/s]pruning bad para partition:   4%|▍         | 41/974 [00:00<00:02, 406.78it/s]pruning bad para partition:   8%|▊         | 82/974 [00:00<00:02, 353.43it/s]pruning bad para partition:  12%|█▏        | 118/974 [00:00<00:02, 338.36it/s]pruning bad para partition:  16%|█▌        | 153/974 [00:00<00:02, 337.81it/s]pruning bad para partition:  20%|█▉        | 192/974 [00:00<00:02, 352.29it/s]pruning bad para partition:  23%|██▎       | 228/974 [00:00<00:02, 346.59it/s]pruning bad para partition:  27%|██▋       | 263/974 [00:00<00:02, 344.30it/s]pruning bad para partition:  31%|███       | 298/974 [00:00<00:01, 340.70it/s]pruning bad para partition:  34%|███▍      | 333/974 [00:00<00:01, 339.55it/s]pruning bad para partition:  38%|███▊      | 370/974 [00:01<00:01, 347.16it/s]pruning bad para partition:  42%|████▏     | 405/974 [00:01<00:01, 330.71it/s]pruning bad para partition:  45%|████▌     | 439/974 [00:01<00:01, 327.66it/s]pruning bad para partition:  48%|████▊     | 472/974 [00:01<00:01, 323.42it/s]pruning bad para partition:  52%|█████▏    | 507/974 [00:01<00:01, 330.80it/s]pruning bad para partition:  56%|█████▌    | 544/974 [00:01<00:01, 342.20it/s]pruning bad para partition:  60%|█████▉    | 580/974 [00:01<00:01, 346.57it/s]pruning bad para partition:  63%|██████▎   | 615/974 [00:01<00:01, 341.11it/s]pruning bad para partition:  67%|██████▋   | 650/974 [00:01<00:00, 338.67it/s]pruning bad para partition:  70%|███████   | 686/974 [00:02<00:00, 343.10it/s]pruning bad para partition:  74%|███████▍  | 721/974 [00:02<00:00, 334.87it/s]pruning bad para partition:  78%|███████▊  | 756/974 [00:02<00:00, 337.04it/s]pruning bad para partition:  81%|████████▏ | 792/974 [00:02<00:00, 341.40it/s]pruning bad para partition:  85%|████████▍ | 827/974 [00:02<00:00, 338.98it/s]pruning bad para partition:  89%|████████▊ | 862/974 [00:02<00:00, 339.55it/s]pruning bad para partition:  92%|█████████▏| 896/974 [00:02<00:00, 338.73it/s]pruning bad para partition:  96%|█████████▌| 931/974 [00:02<00:00, 339.53it/s]pruning bad para partition:  99%|█████████▉| 965/974 [00:02<00:00, 337.49it/s]pruning bad para partition: 100%|██████████| 974/974 [00:02<00:00, 340.04it/s]
+after pruning bad para partition: len(connected_partitions)=740
+max_metric:  536870912.0
+tall_and_thin tensors: 10
+expand and pruning bad ai partition:   0%|          | 0/740 [00:00<?, ?it/s]expand and pruning bad ai partition:   0%|          | 2/740 [00:01<07:29,  1.64it/s]expand and pruning bad ai partition:   1%|▏         | 10/740 [00:01<01:56,  6.25it/s]expand and pruning bad ai partition:   3%|▎         | 19/740 [00:02<01:06, 10.81it/s]expand and pruning bad ai partition:   3%|▎         | 25/740 [00:02<01:00, 11.89it/s]expand and pruning bad ai partition:   5%|▍         | 34/740 [00:02<00:37, 18.83it/s]expand and pruning bad ai partition:   5%|▌         | 38/740 [00:02<00:35, 19.55it/s]expand and pruning bad ai partition:   6%|▌         | 42/740 [00:03<00:33, 20.78it/s]expand and pruning bad ai partition:   6%|▌         | 46/740 [00:03<00:31, 22.07it/s]expand and pruning bad ai partition:   7%|▋         | 50/740 [00:03<00:29, 23.47it/s]expand and pruning bad ai partition:   7%|▋         | 53/740 [00:03<00:34, 20.13it/s]expand and pruning bad ai partition:   8%|▊         | 56/740 [00:03<00:33, 20.21it/s]expand and pruning bad ai partition:   8%|▊         | 59/740 [00:04<00:58, 11.62it/s]expand and pruning bad ai partition:   9%|▉         | 65/740 [00:04<00:38, 17.53it/s]expand and pruning bad ai partition:   9%|▉         | 68/740 [00:09<04:39,  2.40it/s]expand and pruning bad ai partition:  10%|▉         | 71/740 [00:09<03:46,  2.95it/s]expand and pruning bad ai partition:  10%|█         | 74/740 [00:09<03:07,  3.56it/s]expand and pruning bad ai partition:  10%|█         | 76/740 [00:10<02:38,  4.18it/s]expand and pruning bad ai partition:  11%|█▏        | 84/740 [00:10<01:39,  6.58it/s]expand and pruning bad ai partition:  12%|█▏        | 87/740 [00:11<01:45,  6.19it/s]expand and pruning bad ai partition:  13%|█▎        | 93/740 [00:11<01:09,  9.35it/s]expand and pruning bad ai partition:  14%|█▍        | 105/740 [00:11<00:36, 17.23it/s]expand and pruning bad ai partition:  15%|█▍        | 109/740 [00:22<06:26,  1.63it/s]expand and pruning bad ai partition:  15%|█▍        | 110/740 [00:23<06:07,  1.72it/s]expand and pruning bad ai partition:  15%|█▍        | 110/740 [00:36<06:07,  1.72it/s]expand and pruning bad ai partition:  15%|█▌        | 112/740 [00:48<26:28,  2.53s/it]expand and pruning bad ai partition:  15%|█▌        | 113/740 [00:49<25:17,  2.42s/it]expand and pruning bad ai partition:  16%|█▌        | 118/740 [00:50<14:37,  1.41s/it]expand and pruning bad ai partition:  17%|█▋        | 124/740 [00:50<08:28,  1.21it/s]expand and pruning bad ai partition:  17%|█▋        | 128/740 [00:50<06:07,  1.66it/s]expand and pruning bad ai partition:  18%|█▊        | 131/740 [00:50<04:48,  2.11it/s]expand and pruning bad ai partition:  18%|█▊        | 134/740 [00:51<04:11,  2.41it/s]expand and pruning bad ai partition:  19%|█▉        | 140/740 [00:51<02:31,  3.96it/s]expand and pruning bad ai partition:  19%|█▉        | 144/740 [00:52<02:51,  3.47it/s]expand and pruning bad ai partition:  20%|█▉        | 146/740 [00:53<02:31,  3.93it/s]expand and pruning bad ai partition:  20%|██        | 149/740 [00:53<02:04,  4.74it/s]expand and pruning bad ai partition:  20%|██        | 151/740 [00:53<01:49,  5.37it/s]expand and pruning bad ai partition:  21%|██▏       | 158/740 [00:53<01:00,  9.61it/s]expand and pruning bad ai partition:  22%|██▏       | 161/740 [00:55<01:56,  4.96it/s]expand and pruning bad ai partition:  22%|██▏       | 163/740 [00:55<01:44,  5.52it/s]expand and pruning bad ai partition:  22%|██▏       | 165/740 [00:55<01:48,  5.28it/s]expand and pruning bad ai partition:  22%|██▏       | 165/740 [01:06<01:48,  5.28it/s]expand and pruning bad ai partition:  22%|██▏       | 166/740 [01:08<17:06,  1.79s/it]expand and pruning bad ai partition:  23%|██▎       | 168/740 [01:09<13:25,  1.41s/it]expand and pruning bad ai partition:  23%|██▎       | 169/740 [01:10<12:20,  1.30s/it]expand and pruning bad ai partition:  24%|██▎       | 174/740 [01:10<06:05,  1.55it/s]expand and pruning bad ai partition:  25%|██▍       | 183/740 [01:10<02:36,  3.55it/s]expand and pruning bad ai partition:  25%|██▌       | 186/740 [01:10<02:09,  4.27it/s]expand and pruning bad ai partition:  26%|██▌       | 189/740 [01:11<01:55,  4.76it/s]expand and pruning bad ai partition:  26%|██▌       | 193/740 [01:11<01:23,  6.54it/s]expand and pruning bad ai partition:  26%|██▋       | 196/740 [01:12<01:36,  5.66it/s]expand and pruning bad ai partition:  27%|██▋       | 201/740 [01:12<01:29,  6.05it/s]expand and pruning bad ai partition:  27%|██▋       | 203/740 [01:13<01:47,  4.99it/s]expand and pruning bad ai partition:  28%|██▊       | 207/740 [01:13<01:22,  6.44it/s]expand and pruning bad ai partition:  28%|██▊       | 209/740 [01:13<01:15,  7.03it/s]expand and pruning bad ai partition:  29%|██▊       | 212/740 [01:14<01:02,  8.38it/s]expand and pruning bad ai partition:  29%|██▉       | 214/740 [01:14<01:19,  6.64it/s]expand and pruning bad ai partition:  29%|██▉       | 217/740 [01:14<00:59,  8.77it/s]expand and pruning bad ai partition:  30%|██▉       | 221/740 [01:14<00:42, 12.34it/s]expand and pruning bad ai partition:  30%|███       | 224/740 [01:14<00:37, 13.94it/s]expand and pruning bad ai partition:  31%|███       | 227/740 [01:15<00:43, 11.83it/s]expand and pruning bad ai partition:  31%|███       | 229/740 [01:18<03:05,  2.75it/s]expand and pruning bad ai partition:  31%|███       | 231/740 [01:18<02:56,  2.89it/s]expand and pruning bad ai partition:  31%|███▏      | 232/740 [01:18<02:50,  2.97it/s]expand and pruning bad ai partition:  32%|███▏      | 236/740 [01:19<01:40,  5.00it/s]expand and pruning bad ai partition:  32%|███▏      | 238/740 [01:19<01:52,  4.46it/s]expand and pruning bad ai partition:  33%|███▎      | 244/740 [01:19<01:01,  8.11it/s]expand and pruning bad ai partition:  34%|███▎      | 248/740 [01:21<01:42,  4.80it/s]expand and pruning bad ai partition:  34%|███▍      | 250/740 [01:21<01:35,  5.11it/s]expand and pruning bad ai partition:  34%|███▍      | 252/740 [01:27<06:14,  1.30it/s]expand and pruning bad ai partition:  34%|███▍      | 253/740 [01:27<06:00,  1.35it/s]expand and pruning bad ai partition:  34%|███▍      | 254/740 [01:28<05:47,  1.40it/s]expand and pruning bad ai partition:  34%|███▍      | 255/740 [01:28<04:54,  1.65it/s]expand and pruning bad ai partition:  35%|███▌      | 259/740 [01:28<02:40,  2.99it/s]expand and pruning bad ai partition:  36%|███▋      | 269/740 [01:31<02:10,  3.62it/s]expand and pruning bad ai partition:  37%|███▋      | 271/740 [01:31<01:59,  3.91it/s]expand and pruning bad ai partition:  38%|███▊      | 281/740 [01:32<01:24,  5.42it/s]expand and pruning bad ai partition:  38%|███▊      | 282/740 [01:33<01:23,  5.51it/s]expand and pruning bad ai partition:  39%|███▉      | 290/740 [01:35<01:45,  4.26it/s]expand and pruning bad ai partition:  39%|███▉      | 291/740 [01:35<01:42,  4.39it/s]expand and pruning bad ai partition:  40%|████      | 296/740 [01:35<01:15,  5.90it/s]expand and pruning bad ai partition:  40%|████      | 298/740 [01:36<01:07,  6.52it/s]expand and pruning bad ai partition:  41%|████      | 301/740 [01:36<00:57,  7.67it/s]expand and pruning bad ai partition:  42%|████▏     | 310/740 [01:37<01:03,  6.78it/s]expand and pruning bad ai partition:  42%|████▏     | 312/740 [01:37<00:58,  7.33it/s]expand and pruning bad ai partition:  43%|████▎     | 315/740 [01:38<01:04,  6.61it/s]expand and pruning bad ai partition:  43%|████▎     | 319/740 [01:38<00:55,  7.63it/s]expand and pruning bad ai partition:  44%|████▍     | 326/740 [01:39<00:46,  8.86it/s]expand and pruning bad ai partition:  44%|████▍     | 328/740 [01:39<00:45,  9.02it/s]expand and pruning bad ai partition:  45%|████▍     | 330/740 [01:39<00:47,  8.62it/s]expand and pruning bad ai partition:  45%|████▌     | 335/740 [01:40<00:38, 10.39it/s]expand and pruning bad ai partition:  46%|████▌     | 338/740 [01:40<00:48,  8.29it/s]expand and pruning bad ai partition:  46%|████▌     | 340/740 [01:41<00:50,  7.88it/s]expand and pruning bad ai partition:  46%|████▌     | 341/740 [01:46<04:46,  1.39it/s]expand and pruning bad ai partition:  46%|████▌     | 342/740 [01:46<04:38,  1.43it/s]expand and pruning bad ai partition:  46%|████▋     | 343/740 [01:46<04:08,  1.60it/s]expand and pruning bad ai partition:  47%|████▋     | 345/740 [01:47<02:54,  2.27it/s]expand and pruning bad ai partition:  47%|████▋     | 348/740 [01:52<06:20,  1.03it/s]expand and pruning bad ai partition:  47%|████▋     | 349/740 [01:52<05:28,  1.19it/s]expand and pruning bad ai partition:  48%|████▊     | 357/740 [01:53<02:12,  2.90it/s]expand and pruning bad ai partition:  49%|████▉     | 361/740 [01:58<04:03,  1.55it/s]expand and pruning bad ai partition:  49%|████▉     | 363/740 [02:00<04:48,  1.31it/s]expand and pruning bad ai partition:  50%|████▉     | 367/740 [02:02<03:48,  1.64it/s]expand and pruning bad ai partition:  50%|████▉     | 368/740 [02:02<03:28,  1.79it/s]expand and pruning bad ai partition:  50%|█████     | 373/740 [02:02<02:00,  3.03it/s]expand and pruning bad ai partition:  51%|█████     | 377/740 [02:02<01:25,  4.23it/s]expand and pruning bad ai partition:  52%|█████▏    | 385/740 [02:02<00:46,  7.66it/s]expand and pruning bad ai partition:  52%|█████▏    | 388/740 [02:03<00:43,  8.01it/s]expand and pruning bad ai partition:  53%|█████▎    | 392/740 [02:03<00:35,  9.89it/s]expand and pruning bad ai partition:  53%|█████▎    | 395/740 [02:03<00:34,  9.94it/s]expand and pruning bad ai partition:  54%|█████▍    | 402/740 [02:03<00:25, 13.36it/s]expand and pruning bad ai partition:  56%|█████▌    | 413/740 [02:04<00:17, 18.89it/s]expand and pruning bad ai partition:  57%|█████▋    | 424/740 [02:04<00:14, 22.21it/s]expand and pruning bad ai partition:  58%|█████▊    | 430/740 [02:04<00:12, 25.73it/s]expand and pruning bad ai partition:  59%|█████▊    | 434/740 [02:05<00:14, 21.34it/s]expand and pruning bad ai partition:  59%|█████▉    | 437/740 [02:05<00:18, 16.77it/s]expand and pruning bad ai partition:  60%|█████▉    | 442/740 [02:05<00:22, 13.25it/s]expand and pruning bad ai partition:  60%|██████    | 444/740 [02:06<00:23, 12.44it/s]expand and pruning bad ai partition:  60%|██████    | 446/740 [02:09<01:36,  3.04it/s]expand and pruning bad ai partition:  61%|██████    | 452/740 [02:09<00:58,  4.91it/s]expand and pruning bad ai partition:  62%|██████▏   | 457/740 [02:10<00:54,  5.20it/s]expand and pruning bad ai partition:  62%|██████▏   | 460/740 [02:14<01:58,  2.37it/s]expand and pruning bad ai partition:  63%|██████▎   | 464/740 [02:14<01:27,  3.16it/s]expand and pruning bad ai partition:  64%|██████▍   | 473/740 [02:14<00:49,  5.39it/s]expand and pruning bad ai partition:  64%|██████▍   | 475/740 [02:15<00:49,  5.39it/s]expand and pruning bad ai partition:  64%|██████▍   | 477/740 [02:22<03:08,  1.39it/s]expand and pruning bad ai partition:  65%|██████▍   | 478/740 [02:28<05:41,  1.30s/it]expand and pruning bad ai partition:  65%|██████▌   | 483/740 [02:28<03:21,  1.27it/s]expand and pruning bad ai partition:  66%|██████▌   | 487/740 [02:29<02:18,  1.83it/s]expand and pruning bad ai partition:  66%|██████▋   | 492/740 [02:29<01:33,  2.64it/s]expand and pruning bad ai partition:  67%|██████▋   | 497/740 [02:30<01:13,  3.31it/s]expand and pruning bad ai partition:  68%|██████▊   | 500/740 [02:30<01:02,  3.81it/s]expand and pruning bad ai partition:  68%|██████▊   | 504/740 [02:30<00:47,  4.99it/s]expand and pruning bad ai partition:  68%|██████▊   | 506/740 [02:31<00:40,  5.74it/s]expand and pruning bad ai partition:  69%|██████▉   | 509/740 [02:31<00:36,  6.29it/s]expand and pruning bad ai partition:  69%|██████▉   | 514/740 [02:31<00:23,  9.57it/s]expand and pruning bad ai partition:  71%|███████   | 523/740 [02:31<00:12, 17.02it/s]expand and pruning bad ai partition:  71%|███████   | 527/740 [02:32<00:20, 10.48it/s]expand and pruning bad ai partition:  72%|███████▏  | 530/740 [02:32<00:19, 10.99it/s]expand and pruning bad ai partition:  72%|███████▏  | 534/740 [02:34<00:35,  5.86it/s]expand and pruning bad ai partition:  72%|███████▏  | 536/740 [02:34<00:32,  6.37it/s]expand and pruning bad ai partition:  73%|███████▎  | 539/740 [02:34<00:25,  7.88it/s]expand and pruning bad ai partition:  73%|███████▎  | 541/740 [02:36<00:49,  4.01it/s]expand and pruning bad ai partition:  74%|███████▎  | 544/740 [02:36<00:41,  4.74it/s]expand and pruning bad ai partition:  74%|███████▍  | 546/740 [02:40<01:50,  1.76it/s]expand and pruning bad ai partition:  74%|███████▍  | 550/740 [02:40<01:11,  2.65it/s]expand and pruning bad ai partition:  76%|███████▌  | 563/740 [02:40<00:24,  7.16it/s]expand and pruning bad ai partition:  77%|███████▋  | 568/740 [02:40<00:19,  8.72it/s]expand and pruning bad ai partition:  77%|███████▋  | 573/740 [02:50<01:44,  1.60it/s]expand and pruning bad ai partition:  78%|███████▊  | 577/740 [02:50<01:19,  2.06it/s]expand and pruning bad ai partition:  78%|███████▊  | 580/740 [02:53<01:31,  1.75it/s]expand and pruning bad ai partition:  80%|███████▉  | 590/740 [02:54<00:52,  2.84it/s]expand and pruning bad ai partition:  81%|████████  | 596/740 [02:57<00:54,  2.62it/s]expand and pruning bad ai partition:  81%|████████▏ | 602/740 [02:57<00:39,  3.46it/s]expand and pruning bad ai partition:  82%|████████▏ | 604/740 [02:58<00:40,  3.36it/s]expand and pruning bad ai partition:  82%|████████▏ | 610/740 [02:58<00:26,  4.94it/s]expand and pruning bad ai partition:  83%|████████▎ | 614/740 [03:00<00:31,  4.00it/s]expand and pruning bad ai partition:  84%|████████▎ | 619/740 [03:00<00:22,  5.45it/s]expand and pruning bad ai partition:  85%|████████▍ | 627/740 [03:01<00:20,  5.39it/s]expand and pruning bad ai partition:  85%|████████▌ | 630/740 [03:02<00:17,  6.14it/s]expand and pruning bad ai partition:  86%|████████▌ | 636/740 [03:02<00:11,  8.75it/s]expand and pruning bad ai partition:  86%|████████▋ | 639/740 [03:02<00:10,  9.98it/s]expand and pruning bad ai partition:  87%|████████▋ | 642/740 [03:02<00:10,  8.98it/s]expand and pruning bad ai partition:  88%|████████▊ | 652/740 [03:03<00:06, 13.02it/s]expand and pruning bad ai partition:  89%|████████▊ | 655/740 [03:04<00:13,  6.18it/s]expand and pruning bad ai partition:  89%|████████▉ | 657/740 [03:05<00:15,  5.21it/s]expand and pruning bad ai partition:  89%|████████▉ | 662/740 [03:06<00:14,  5.50it/s]expand and pruning bad ai partition:  90%|████████▉ | 664/740 [03:06<00:13,  5.51it/s]expand and pruning bad ai partition:  90%|█████████ | 667/740 [03:20<01:36,  1.32s/it]expand and pruning bad ai partition:  90%|█████████ | 669/740 [03:21<01:20,  1.14s/it]expand and pruning bad ai partition:  91%|█████████ | 675/740 [03:21<00:40,  1.59it/s]expand and pruning bad ai partition:  92%|█████████▏| 684/740 [03:21<00:19,  2.92it/s]expand and pruning bad ai partition:  94%|█████████▍| 696/740 [03:22<00:08,  5.37it/s]expand and pruning bad ai partition:  95%|█████████▍| 700/740 [03:22<00:06,  6.40it/s]expand and pruning bad ai partition:  96%|█████████▌| 707/740 [03:22<00:03,  8.94it/s]expand and pruning bad ai partition:  96%|█████████▋| 713/740 [03:22<00:02, 11.49it/s]expand and pruning bad ai partition:  97%|█████████▋| 719/740 [03:25<00:04,  4.76it/s]expand and pruning bad ai partition:  98%|█████████▊| 724/740 [03:25<00:02,  6.16it/s]expand and pruning bad ai partition:  98%|█████████▊| 728/740 [03:27<00:02,  4.76it/s]expand and pruning bad ai partition:  99%|█████████▉| 731/740 [03:27<00:01,  5.67it/s]expand and pruning bad ai partition:  99%|█████████▉| 734/740 [03:29<00:01,  3.88it/s]expand and pruning bad ai partition: 100%|██████████| 740/740 [03:29<00:00,  3.54it/s]
+after expand and pruning bad ai partition: len(connected_partitions)=32
+after pruning bad partition(provide_output=True): len(connected_partitions)=10
+pruning bad partition(provide_output=True):   0%|          | 0/32 [00:00<?, ?it/s]pruning bad partition(provide_output=True): 100%|██████████| 32/32 [00:00<00:00, 1466.80it/s]
+module {
+  func.func @KeyFormer(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>, %arg3: tensor<1x32x4096x4096xf32>) -> (tensor<1x4096x32x128xf16>, tensor<1x32x4096xf32>) {
+    %cst = arith.constant dense<1.500000e+00> : tensor<1xf32>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg2, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.exp %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.reduce(%8), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %10 = asuka.div %8, %9 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.convert %10, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %12 = asuka.dot %11, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %13 = asuka.permute %12, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    %14 = asuka.log %arg3 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %15 = asuka.neg %14 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %16 = asuka.add %7, %15 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %17 = asuka.div %16, %cst : (tensor<1x32x4096x4096xf32>, tensor<1xf32>) -> tensor<1x32x4096x4096xf32>
+    %18 = asuka.exp %17 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %19 = asuka.reduce(%18), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %20 = asuka.div %18, %19 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %21 = asuka.reduce(%20), dim = 2, op =  ADD, keep_dim = false : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096xf32>
+    return %13, %21 : tensor<1x4096x32x128xf16>, tensor<1x32x4096xf32>
+  }
+  asuka.kernel @KeyFormer_p0(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>, %arg3: tensor<1x32x4096x4096xf32>) -> (tensor<1x32x4096x1xf32>, tensor<1x4096x32x128xf16>, tensor<1x32x4096x1xf32>) {
+    %cst = arith.constant dense<1.500000e+00> : tensor<1xf32>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg2, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.exp %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.reduce(%8), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %10 = asuka.div %8, %9 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.convert %10, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %12 = asuka.dot %11, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %13 = asuka.permute %12, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    %14 = asuka.log %arg3 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %15 = asuka.neg %14 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %16 = asuka.add %7, %15 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %17 = asuka.div %16, %cst : (tensor<1x32x4096x4096xf32>, tensor<1xf32>) -> tensor<1x32x4096x4096xf32>
+    %18 = asuka.exp %17 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %19 = asuka.reduce(%18), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    asuka.return %9, %13, %19 : tensor<1x32x4096x1xf32>, tensor<1x4096x32x128xf16>, tensor<1x32x4096x1xf32>
+  }
+  asuka.kernel @KeyFormer_p1(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>) -> tensor<1x4096x32x128xf16> {
+    %cst = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg2, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.exp %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.reduce(%8), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %10 = asuka.div %8, %9 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.convert %10, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %12 = asuka.dot %11, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %13 = asuka.permute %12, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    asuka.return %13 : tensor<1x4096x32x128xf16>
+  }
+  asuka.kernel @KeyFormer_p2(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>, %arg3: tensor<1x32x4096x1xf32>) -> tensor<1x4096x32x128xf16> {
+    %cst = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg2, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.exp %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.div %8, %arg3 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %10 = asuka.convert %9, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %11 = asuka.dot %10, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %12 = asuka.permute %11, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    asuka.return %12 : tensor<1x4096x32x128xf16>
+  }
+  asuka.kernel @KeyFormer_p3(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>, %arg3: tensor<1x32x4096x4096xf32>) -> (tensor<1x4096x32x128xf16>, tensor<1x32x4096x1xf32>) {
+    %cst = arith.constant dense<1.500000e+00> : tensor<1xf32>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg2, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.exp %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.reduce(%8), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %10 = asuka.div %8, %9 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.convert %10, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %12 = asuka.dot %11, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %13 = asuka.permute %12, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    %14 = asuka.log %arg3 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %15 = asuka.neg %14 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %16 = asuka.add %7, %15 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %17 = asuka.div %16, %cst : (tensor<1x32x4096x4096xf32>, tensor<1xf32>) -> tensor<1x32x4096x4096xf32>
+    %18 = asuka.exp %17 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %19 = asuka.reduce(%18), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    asuka.return %13, %19 : tensor<1x4096x32x128xf16>, tensor<1x32x4096x1xf32>
+  }
+  asuka.kernel @KeyFormer_p4(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x1xf32> {
+    %cst = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %3 = asuka.dot %1, %2 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %4 = asuka.div %3, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.add %4, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.convert %5, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %7 = asuka.exp %6 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.reduce(%7), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    asuka.return %8 : tensor<1x32x4096x1xf32>
+  }
+  asuka.kernel @KeyFormer_p5(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x32x4096x4096xf32>) -> (tensor<1x32x4096x1xf32>, tensor<1x32x4096x1xf32>) {
+    %cst = arith.constant dense<1.500000e+00> : tensor<1xf32>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %3 = asuka.dot %1, %2 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %4 = asuka.div %3, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.add %4, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.convert %5, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %7 = asuka.exp %6 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.reduce(%7), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %9 = asuka.log %arg2 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %10 = asuka.neg %9 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.add %6, %10 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %12 = asuka.div %11, %cst : (tensor<1x32x4096x4096xf32>, tensor<1xf32>) -> tensor<1x32x4096x4096xf32>
+    %13 = asuka.exp %12 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %14 = asuka.reduce(%13), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    asuka.return %8, %14 : tensor<1x32x4096x1xf32>, tensor<1x32x4096x1xf32>
+  }
+  asuka.kernel @KeyFormer_p6(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>, %arg3: tensor<1x32x4096x1xf32>, %arg4: tensor<1x32x4096x4096xf32>) -> (tensor<1x4096x32x128xf16>, tensor<1x32x4096x1xf32>) {
+    %cst = arith.constant dense<1.500000e+00> : tensor<1xf32>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg2, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.exp %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.div %8, %arg3 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %10 = asuka.convert %9, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %11 = asuka.dot %10, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %12 = asuka.permute %11, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    %13 = asuka.log %arg4 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %14 = asuka.neg %13 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %15 = asuka.add %7, %14 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %16 = asuka.div %15, %cst : (tensor<1x32x4096x4096xf32>, tensor<1xf32>) -> tensor<1x32x4096x4096xf32>
+    %17 = asuka.exp %16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %18 = asuka.reduce(%17), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    asuka.return %12, %18 : tensor<1x4096x32x128xf16>, tensor<1x32x4096x1xf32>
+  }
+  asuka.kernel @KeyFormer_p7(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x32x4096x4096xf32>, %arg3: tensor<1x32x4096x1xf32>) -> tensor<1x32x4096xf32> {
+    %cst = arith.constant dense<1.500000e+00> : tensor<1xf32>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %3 = asuka.dot %1, %2 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %4 = asuka.div %3, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.add %4, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.convert %5, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %7 = asuka.log %arg2 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.neg %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.add %6, %8 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %10 = asuka.div %9, %cst : (tensor<1x32x4096x4096xf32>, tensor<1xf32>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.exp %10 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %12 = asuka.div %11, %arg3 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %13 = asuka.reduce(%12), dim = 2, op =  ADD, keep_dim = false : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096xf32>
+    asuka.return %13 : tensor<1x32x4096xf32>
+  }
+  asuka.kernel @KeyFormer_p8(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>) -> (tensor<1x32x4096x1xf32>, tensor<1x4096x32x128xf16>) {
+    %cst = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg2, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.add %5, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.convert %6, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.exp %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.reduce(%8), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %10 = asuka.div %8, %9 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.convert %10, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %12 = asuka.dot %11, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %13 = asuka.permute %12, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    asuka.return %9, %13 : tensor<1x32x4096x1xf32>, tensor<1x4096x32x128xf16>
+  }
+  asuka.kernel @KeyFormer_p9(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32> {
+    %cst = arith.constant dense<1.500000e+00> : tensor<1xf32>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %3 = asuka.dot %1, %2 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %4 = asuka.div %3, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.add %4, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.convert %5, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %7 = asuka.log %arg2 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %8 = asuka.neg %7 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %9 = asuka.add %6, %8 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %10 = asuka.div %9, %cst : (tensor<1x32x4096x4096xf32>, tensor<1xf32>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.exp %10 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %12 = asuka.reduce(%11), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    asuka.return %12 : tensor<1x32x4096x1xf32>
+  }
+}
+optimize KeyFormer_p0
+optimize KeyFormer_p1
+optimize KeyFormer_p2
+optimize KeyFormer_p3
+optimize KeyFormer_p4
+optimize KeyFormer_p5
+%0:2 = asuka.parallel_for <<UNKNOWN SSA VALUE>>, <<UNKNOWN SSA VALUE>>, <<UNKNOWN SSA VALUE>> {
+^bb0(%arg0: index, %arg1: index, %arg2: index, %arg3: tensor<128x128xf64>, %arg4: tensor<4096x128xf64>, %arg5: tensor<128x4096xf64>):
+  %cst = arith.constant 0.000000e+00 : f64
+  %cst_0 = arith.constant 0xFFF0000000000000 : f64
+  %c1 = arith.constant 1 : index
+  %cst_1 = arith.constant dense<0.96179668108622229> : tensor<1xf64>
+  %cst_2 = arith.constant dense<1.4426950216293335> : tensor<1xf64>
+  %cst_3 = arith.constant dense<1.131250e+01> : tensor<1xf64>
+  %c0 = arith.constant 0 : index
+  %0 = asuka.permute %arg4, dims = [1, 0] : (tensor<4096x128xf64>) -> tensor<128x4096xf64>
+  %1 = asuka.div %arg3, %cst_3 : (tensor<128x128xf64>, tensor<1xf64>) -> tensor<128x128xf64>
+  %2 = asuka.block_for lb = 0, ub = 4096, step = 128, args = [%0], dims = [1], init = [] {
+  ^bb0(%arg6: index, %arg7: tensor<128x128xf64>):
+    %12 = asuka.mask starts = [%arg1, %arg6], sizes = [128, 128], type = f64 {
+    ^bb0(%arg8: index, %arg9: index):
+      %15 = arith.addi %arg8, %c1 : index
+      %16 = arith.cmpi ule, %15, %arg9 : index
+      %17 = scf.if %16 -> (f64) {
+        scf.yield %cst_0 : f64
+      } else {
+        scf.yield %cst : f64
+      }
+      asuka.mask_yield %17 : f64
+    } : (index, index) -> tensor<128x128xf64>
+    %13 = asuka.dot %1, %arg7 : (tensor<128x128xf64>, tensor<128x128xf64>) -> tensor<128x128xf64>
+    %14 = asuka.add %13, %12 : (tensor<128x128xf64>, tensor<128x128xf64>) -> tensor<128x128xf64>
+    asuka.block_yield block_outs = [%14], iter_outs = [] : tensor<128x128xf64>
+  } : (tensor<128x4096xf64>) -> tensor<128x4096xf64>
+  %3 = asuka.mul %2, %cst_2 : (tensor<128x4096xf64>, tensor<1xf64>) -> tensor<128x4096xf64>
+  %4 = asuka.exp2 %3 : (tensor<128x4096xf64>) -> tensor<128x4096xf64>
+  %5 = asuka.reduce(%4), dim = 1, op =  ADD, keep_dim = true : (tensor<128x4096xf64>) -> tensor<128x1xf64>
+  %6 = asuka.log %arg5 : (tensor<128x4096xf64>) -> tensor<128x4096xf64>
+  %7 = asuka.neg %6 : (tensor<128x4096xf64>) -> tensor<128x4096xf64>
+  %8 = asuka.add %2, %7 : (tensor<128x4096xf64>, tensor<128x4096xf64>) -> tensor<128x4096xf64>
+  %9 = asuka.mul %8, %cst_1 : (tensor<128x4096xf64>, tensor<1xf64>) -> tensor<128x4096xf64>
+  %10 = asuka.exp2 %9 : (tensor<128x4096xf64>) -> tensor<128x4096xf64>
+  %11 = asuka.reduce(%10), dim = 1, op =  ADD, keep_dim = true : (tensor<128x4096xf64>) -> tensor<128x1xf64>
+  asuka.parallel_yield %5, %11 : tensor<128x1xf64>, tensor<128x1xf64>
+} : (tensor<1x4096x32x128xf64>, tensor<1x4096x32x128xf64>, tensor<1x32x4096x4096xf64>) -> (tensor<1x32x4096x1xf64>, tensor<1x32x4096x1xf64>)
+unreachable
+%0:2 = asuka.parallel_for <<UNKNOWN SSA VALUE>>, <<UNKNOWN SSA VALUE>>, <<UNKNOWN SSA VALUE>> {
+^bb0(%arg0: index, %arg1: index, %arg2: index, %arg3: tensor<128x128xf64>, %arg4: tensor<4096x128xf64>, %arg5: tensor<128x4096xf64>):
+  %cst = arith.constant 0.000000e+00 : f64
+  %cst_0 = arith.constant 0xFFF0000000000000 : f64
+  %c1 = arith.constant 1 : index
+  %cst_1 = arith.constant dense<0.96179668108622229> : tensor<1xf64>
+  %cst_2 = arith.constant dense<1.4426950216293335> : tensor<1xf64>
+  %cst_3 = arith.constant dense<1.131250e+01> : tensor<1xf64>
+  %0 = asuka.permute %arg4, dims = [1, 0] : (tensor<4096x128xf64>) -> tensor<128x4096xf64>
+  %1 = asuka.div %arg3, %cst_3 : (tensor<128x128xf64>, tensor<1xf64>) -> tensor<128x128xf64>
+  %2 = asuka.block_for lb = 0, ub = 4096, step = 128, args = [%0], dims = [1], init = [] {
+  ^bb0(%arg6: index, %arg7: tensor<128x128xf64>):
+    %12 = asuka.mask starts = [%arg1, %arg6], sizes = [128, 128], type = f64 {
+    ^bb0(%arg8: index, %arg9: index):
+      %15 = arith.addi %arg8, %c1 : index
+      %16 = arith.cmpi ule, %15, %arg9 : index
+      %17 = scf.if %16 -> (f64) {
+        scf.yield %cst_0 : f64
+      } else {
+        scf.yield %cst : f64
+      }
+      asuka.mask_yield %17 : f64
+    } : (index, index) -> tensor<128x128xf64>
+    %13 = asuka.dot %1, %arg7 : (tensor<128x128xf64>, tensor<128x128xf64>) -> tensor<128x128xf64>
+    %14 = asuka.add %13, %12 : (tensor<128x128xf64>, tensor<128x128xf64>) -> tensor<128x128xf64>
+    asuka.block_yield block_outs = [%14], iter_outs = [] : tensor<128x128xf64>
+  } : (tensor<128x4096xf64>) -> tensor<128x4096xf64>
+  %3 = asuka.mul %2, %cst_2 : (tensor<128x4096xf64>, tensor<1xf64>) -> tensor<128x4096xf64>
+  %4 = asuka.exp2 %3 : (tensor<128x4096xf64>) -> tensor<128x4096xf64>
+  %5 = asuka.reduce(%4), dim = 1, op =  ADD, keep_dim = true : (tensor<128x4096xf64>) -> tensor<128x1xf64>
+  %6 = asuka.log %arg5 : (tensor<128x4096xf64>) -> tensor<128x4096xf64>
+  %7 = asuka.neg %6 : (tensor<128x4096xf64>) -> tensor<128x4096xf64>
+  %8 = asuka.add %2, %7 : (tensor<128x4096xf64>, tensor<128x4096xf64>) -> tensor<128x4096xf64>
+  %9 = asuka.mul %8, %cst_1 : (tensor<128x4096xf64>, tensor<1xf64>) -> tensor<128x4096xf64>
+  %10 = asuka.exp2 %9 : (tensor<128x4096xf64>) -> tensor<128x4096xf64>
+  %11 = asuka.reduce(%10), dim = 1, op =  ADD, keep_dim = true : (tensor<128x4096xf64>) -> tensor<128x1xf64>
+  asuka.parallel_yield %5, %11 : tensor<128x1xf64>, tensor<128x1xf64>
+} : (tensor<1x4096x32x128xf64>, tensor<1x4096x32x128xf64>, tensor<1x32x4096x4096xf64>) -> (tensor<1x32x4096x1xf64>, tensor<1x32x4096x1xf64>)
+unreachable
+error: failed to legalize operation 'asuka.dynamic_block_for' that was explicitly marked illegal
+optimize KeyFormer_p5 failed
+optimize KeyFormer_p6
+optimize KeyFormer_p7
+optimize KeyFormer_p8
+optimize KeyFormer_p9
+tuning time: 227.08270621299744 sec
+Skip op: func.func
+path: /tmp/tmp6j8q_952.py
+profiling...
+out_str='[KeyFormer_p0] avg_ms: 5.197084426879883\n[KeyFormer_p1] avg_ms: 1.0004602670669556\n[KeyFormer_p2] avg_ms: 0.9833257794380188\n[KeyFormer_p3] avg_ms: 5.1835455894470215\n[KeyFormer_p4] avg_ms: 0.6632605791091919\n[KeyFormer_p6] avg_ms: 4.800102233886719\n[KeyFormer_p7] avg_ms: 1.9308066368103027\n[KeyFormer_p8] avg_ms: 0.9961852431297302\n[KeyFormer_p9] avg_ms: 1.9102932214736938\n'
+[KeyFormer_p0] avg_ms: 5.197084426879883
+[KeyFormer_p1] avg_ms: 1.0004602670669556
+[KeyFormer_p2] avg_ms: 0.9833257794380188
+[KeyFormer_p3] avg_ms: 5.1835455894470215
+[KeyFormer_p4] avg_ms: 0.6632605791091919
+[KeyFormer_p6] avg_ms: 4.800102233886719
+[KeyFormer_p7] avg_ms: 1.9308066368103027
+[KeyFormer_p8] avg_ms: 0.9961852431297302
+[KeyFormer_p9] avg_ms: 1.9102932214736938
+best_kernel:
+
+KeyFormer_p8
+KeyFormer_p9
+KeyFormer_p7
+best_time=4.837285101413727
+import math
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import triton
+import triton.language as tl
+from typing import Callable, Any, Optional, Tuple
+
+def bench_KeyFormer_p8():
+  dev = torch.cuda.current_device()
+  rand_arg_0 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  rand_arg_1 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  rand_arg_2 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  avg_ms = triton.testing.do_bench(lambda: KeyFormer_p8(rand_arg_0, rand_arg_1, rand_arg_2))
+  print('[KeyFormer_p8] avg_ms:', avg_ms)
+
+def KeyFormer_p8(arg0: torch.Tensor, arg1: torch.Tensor, arg2: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+  dev = arg0.device
+  autotune_key = torch.cuda.get_device_capability(dev)[0]
+  tensor_0 = arg0
+  tensor_1 = arg1
+  tensor_2 = arg2
+  empty_ptr_3 = torch.empty(1, 32, 4096, 1, dtype=torch.float32, device=dev)
+  empty_ptr_4 = torch.empty(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  grid = (1, 32, 32)
+  KeyFormer_p8_kernel[grid](tensor_0, tensor_1, tensor_2, empty_ptr_3, empty_ptr_4, autotune_key)
+  tensor_5 = empty_ptr_3
+  tensor_6 = empty_ptr_4
+  return tensor_5, tensor_6
+
+@triton.autotune(configs=[
+  triton.Config({}, num_warps=4),
+  triton.Config({}, num_warps=8),
+], key=['autotune_key'])
+@triton.jit
+def KeyFormer_p8_kernel(
+  arg_0,
+  arg_1,
+  arg_2,
+  arg_3,
+  arg_4,
+  autotune_key,
+):
+  pid_5 = tl.program_id(0)
+  pid_6 = tl.program_id(1)
+  pid_7 = tl.program_id(2)
+  const_8 = 1.275311e-01
+  const_9 = float('-inf')
+  const_10 = 0.000000e+00
+  const_11 = 0
+  const_12 = 1
+  const_13 = 4096
+  const_14 = 128
+  mul_15 = pid_6 * const_14
+  mul_16 = mul_15 * const_13
+  mul_17 = pid_7 * const_14
+  add_18 = mul_16 + mul_17
+  block_ptr_19 = tl.make_block_ptr(
+    base=arg_0 + add_18,
+    shape=(128, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  block_load_20 = tl.load(block_ptr_19)
+  mul_21 = pid_7 * const_13
+  add_22 = mul_15 + mul_21
+  block_ptr_23 = tl.make_block_ptr(
+    base=arg_3 + add_22,
+    shape=(128, 1,),
+    strides=(1, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 1,),
+    order=(1, 0,),
+  )
+  block_ptr_24 = tl.make_block_ptr(
+    base=arg_4 + add_18,
+    shape=(128, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  converted_25 = const_8
+  mul_26 = block_load_20 * converted_25
+  mul_26 = mul_26.to(tl.float16)
+  zero_27 = tl.zeros([128, 128], dtype=tl.float32)
+  zero_28 = tl.zeros([128, 1], dtype=tl.float32)
+  add_29 = mul_15 + const_14
+  block_ptr_30 = tl.make_block_ptr(
+    base=arg_2 + mul_17,
+    shape=(128, 4096,),
+    strides=(1, 4096,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(0, 1,),
+  )
+  block_ptr_31 = tl.make_block_ptr(
+    base=arg_1 + mul_17,
+    shape=(4096, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  for i_32 in range(const_11, add_29, const_14):
+    block_load_33 = tl.load(block_ptr_30)
+    block_load_34 = tl.load(block_ptr_31)
+    dot_35 = tl.dot(mul_26, block_load_33)
+    where_36 = tl.zeros([128, 128], dtype=tl.float32)
+    where_36 = tl.where(mul_15 + tl.arange(0, 128)[:, None] >= i_32 + tl.arange(0, 128)[None, :], where_36, float('-inf'))
+    add_37 = dot_35 + where_36
+    exp2_38 = tl.math.exp2(add_37)
+    reduce_sum_39 = tl.sum(exp2_38, axis=1, keep_dims=True).to(tl.float32)
+    reduce_sum_39 += zero_28
+    converted_40 = exp2_38.to(tl.float16)
+    dot_41 = tl.dot(converted_40, block_load_34)
+    add_42 = zero_27 + dot_41
+    block_advance_43 = tl.advance(block_ptr_30, (0, 128,))
+    block_advance_44 = tl.advance(block_ptr_31, (128, 0,))
+    block_ptr_30 = block_advance_43
+    block_ptr_31 = block_advance_44
+    zero_27 = add_42
+    zero_28 = reduce_sum_39
+  div_45 = zero_27 / zero_28
+  converted_46 = div_45.to(tl.float16)
+  block_store_47 = tl.store(block_ptr_23, zero_28)
+  block_store_48 = tl.store(block_ptr_24, converted_46)
+
+def bench_KeyFormer_p9():
+  dev = torch.cuda.current_device()
+  rand_arg_0 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  rand_arg_1 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  rand_arg_2 = torch.randn(1, 32, 4096, 4096, dtype=torch.float32, device=dev)
+  avg_ms = triton.testing.do_bench(lambda: KeyFormer_p9(rand_arg_0, rand_arg_1, rand_arg_2))
+  print('[KeyFormer_p9] avg_ms:', avg_ms)
+
+def KeyFormer_p9(arg0: torch.Tensor, arg1: torch.Tensor, arg2: torch.Tensor) -> torch.Tensor:
+  dev = arg0.device
+  autotune_key = torch.cuda.get_device_capability(dev)[0]
+  tensor_0 = arg0
+  tensor_1 = arg1
+  tensor_2 = arg2
+  empty_ptr_3 = torch.empty(1, 32, 4096, 1, dtype=torch.float32, device=dev)
+  grid = (1, 32, 32)
+  KeyFormer_p9_kernel[grid](tensor_0, tensor_1, tensor_2, empty_ptr_3, autotune_key)
+  tensor_4 = empty_ptr_3
+  return tensor_4
+
+@triton.autotune(configs=[
+  triton.Config({}, num_warps=4),
+  triton.Config({}, num_warps=8),
+], key=['autotune_key'])
+@triton.jit
+def KeyFormer_p9_kernel(
+  arg_0,
+  arg_1,
+  arg_2,
+  arg_3,
+  autotune_key,
+):
+  pid_4 = tl.program_id(0)
+  pid_5 = tl.program_id(1)
+  pid_6 = tl.program_id(2)
+  const_7 = 1.131250e+01
+  const_8 = 9.617967e-01
+  const_9 = float('-inf')
+  const_10 = 0.000000e+00
+  const_11 = 0
+  const_12 = 16777216
+  const_13 = 1
+  const_14 = 4096
+  const_15 = 128
+  mul_16 = pid_5 * const_15
+  mul_17 = mul_16 * const_14
+  mul_18 = pid_6 * const_15
+  add_19 = mul_17 + mul_18
+  block_ptr_20 = tl.make_block_ptr(
+    base=arg_0 + add_19,
+    shape=(128, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  block_load_21 = tl.load(block_ptr_20)
+  mul_22 = pid_6 * const_12
+  add_23 = mul_17 + mul_22
+  mul_24 = pid_6 * const_14
+  add_25 = mul_16 + mul_24
+  block_ptr_26 = tl.make_block_ptr(
+    base=arg_3 + add_25,
+    shape=(128, 1,),
+    strides=(1, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 1,),
+    order=(1, 0,),
+  )
+  converted_27 = const_7
+  div_28 = block_load_21 / converted_27
+  div_28 = div_28.to(tl.float16)
+  zero_29 = tl.zeros([128, 1], dtype=tl.float32)
+  add_30 = mul_16 + const_15
+  block_ptr_31 = tl.make_block_ptr(
+    base=arg_1 + mul_18,
+    shape=(128, 4096,),
+    strides=(1, 4096,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(0, 1,),
+  )
+  block_ptr_32 = tl.make_block_ptr(
+    base=arg_2 + add_23,
+    shape=(128, 4096,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  for i_33 in range(const_11, add_30, const_15):
+    block_load_34 = tl.load(block_ptr_31)
+    block_load_35 = tl.load(block_ptr_32)
+    log_36 = tl.math.log(block_load_35)
+    neg_37 = -(log_36)
+    mul_38 = neg_37 * const_8
+    where_39 = tl.zeros([128, 128], dtype=tl.float32)
+    where_39 = tl.where(mul_16 + tl.arange(0, 128)[:, None] >= i_33 + tl.arange(0, 128)[None, :], where_39, float('-inf'))
+    converted_40 = const_8
+    mul_41 = block_load_34 * converted_40
+    mul_41 = mul_41.to(tl.float16)
+    dot_42 = tl.dot(div_28, mul_41)
+    add_43 = dot_42 + where_39
+    add_44 = add_43 + mul_38
+    exp2_45 = tl.math.exp2(add_44)
+    reduce_sum_46 = tl.sum(exp2_45, axis=1, keep_dims=True).to(tl.float32)
+    reduce_sum_46 += zero_29
+    block_advance_47 = tl.advance(block_ptr_31, (0, 128,))
+    block_advance_48 = tl.advance(block_ptr_32, (0, 128,))
+    block_ptr_31 = block_advance_47
+    block_ptr_32 = block_advance_48
+    zero_29 = reduce_sum_46
+  block_store_49 = tl.store(block_ptr_26, zero_29)
+
+def bench_KeyFormer_p7():
+  dev = torch.cuda.current_device()
+  rand_arg_0 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  rand_arg_1 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  rand_arg_2 = torch.randn(1, 32, 4096, 4096, dtype=torch.float32, device=dev)
+  rand_arg_3 = torch.randn(1, 32, 4096, 1, dtype=torch.float32, device=dev)
+  avg_ms = triton.testing.do_bench(lambda: KeyFormer_p7(rand_arg_0, rand_arg_1, rand_arg_2, rand_arg_3))
+  print('[KeyFormer_p7] avg_ms:', avg_ms)
+
+def KeyFormer_p7(arg0: torch.Tensor, arg1: torch.Tensor, arg2: torch.Tensor, arg3: torch.Tensor) -> torch.Tensor:
+  dev = arg0.device
+  autotune_key = torch.cuda.get_device_capability(dev)[0]
+  tensor_0 = arg0
+  tensor_1 = arg1
+  tensor_2 = arg2
+  tensor_3 = arg3
+  empty_ptr_4 = torch.empty(1, 32, 4096, dtype=torch.float32, device=dev)
+  grid = (1, 32, 32)
+  KeyFormer_p7_kernel[grid](tensor_0, tensor_1, tensor_2, tensor_3, empty_ptr_4, autotune_key)
+  tensor_5 = empty_ptr_4
+  return tensor_5
+
+@triton.autotune(configs=[
+  triton.Config({}, num_warps=4),
+  triton.Config({}, num_warps=8),
+], key=['autotune_key'])
+@triton.jit
+def KeyFormer_p7_kernel(
+  arg_0,
+  arg_1,
+  arg_2,
+  arg_3,
+  arg_4,
+  autotune_key,
+):
+  pid_5 = tl.program_id(0)
+  pid_6 = tl.program_id(1)
+  pid_7 = tl.program_id(2)
+  const_8 = 1.131250e+01
+  const_9 = 9.617967e-01
+  const_10 = float('-inf')
+  const_11 = 0.000000e+00
+  const_12 = 16777216
+  const_13 = 4096
+  const_14 = 128
+  const_15 = 1
+  mul_16 = pid_6 * const_14
+  mul_17 = pid_7 * const_14
+  mul_18 = mul_17 * const_13
+  add_19 = mul_16 + mul_18
+  block_ptr_20 = tl.make_block_ptr(
+    base=arg_1 + add_19,
+    shape=(128, 128,),
+    strides=(1, 4096,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(0, 1,),
+  )
+  block_load_21 = tl.load(block_ptr_20)
+  mul_22 = pid_6 * const_12
+  add_23 = mul_22 + mul_17
+  mul_24 = pid_6 * const_13
+  add_25 = mul_24 + mul_17
+  block_ptr_26 = tl.make_block_ptr(
+    base=arg_4 + add_25,
+    shape=(128,),
+    strides=(1,),
+    offsets=(0,),
+    block_shape=(128,),
+    order=(0,),
+  )
+  converted_27 = const_9
+  mul_28 = block_load_21 * converted_27
+  mul_28 = mul_28.to(tl.float16)
+  zero_29 = tl.zeros([128], dtype=tl.float32)
+  block_ptr_30 = tl.make_block_ptr(
+    base=arg_0 + add_19,
+    shape=(4096, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  add_31 = mul_18 + add_23
+  block_ptr_32 = tl.make_block_ptr(
+    base=arg_2 + add_31,
+    shape=(4096, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  block_ptr_33 = tl.make_block_ptr(
+    base=arg_3 + add_25,
+    shape=(4096,),
+    strides=(1,),
+    offsets=(0,),
+    block_shape=(128,),
+    order=(0,),
+  )
+  for i_34 in range(mul_17, const_13, const_14):
+    block_load_35 = tl.load(block_ptr_30)
+    block_load_36 = tl.load(block_ptr_32)
+    block_load_37 = tl.load(block_ptr_33)
+    log_38 = tl.math.log(block_load_36)
+    neg_39 = -(log_38)
+    mul_40 = neg_39 * const_9
+    where_41 = tl.zeros([128, 128], dtype=tl.float32)
+    where_41 = tl.where(i_34 + tl.arange(0, 128)[:, None] >= mul_17 + tl.arange(0, 128)[None, :], where_41, float('-inf'))
+    converted_42 = const_8
+    div_43 = block_load_35 / converted_42
+    div_43 = div_43.to(tl.float16)
+    dot_44 = tl.dot(div_43, mul_28)
+    add_45 = dot_44 + where_41
+    add_46 = add_45 + mul_40
+    exp2_47 = tl.math.exp2(add_46)
+    unsqueeze_48 = block_load_37[:, None]
+    div_49 = exp2_47 / unsqueeze_48
+    reduce_sum_50 = tl.sum(div_49, axis=0, keep_dims=False).to(tl.float32)
+    reduce_sum_50 += zero_29
+    block_advance_51 = tl.advance(block_ptr_30, (128, 0,))
+    block_advance_52 = tl.advance(block_ptr_32, (128, 0,))
+    block_advance_53 = tl.advance(block_ptr_33, (128,))
+    block_ptr_30 = block_advance_51
+    block_ptr_32 = block_advance_52
+    block_ptr_33 = block_advance_53
+    zero_29 = reduce_sum_50
+  block_store_54 = tl.store(block_ptr_26, zero_29)
+
+def KeyFormer(arg_0, arg_1, arg_2, arg_3):
+  k0_out_0, k0_out_1 = KeyFormer_p8(arg_0, arg_2, arg_1)
+  k1_out_0 = KeyFormer_p9(arg_0, arg_1, arg_3)
+  k2_out_0 = KeyFormer_p7(arg_0, arg_1, arg_3, k1_out_0)
+  return k0_out_1, k2_out_0
+
+write code to /tmp/tmp5mm_rwq8.py
+start_peak_mem_mib=2152.125
+end_peak_mem_mib=2441.625
+gflops=137.438953472
+mib=2441.625
+checking our...
+out loss: {'abs_max': 0.001953125, 'abs_mean': 2.7608172469939518e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 1422.0, 'nz_rel_mean': 0.00630206091165571, 'mse': 2.322346638655772e-09, 'rmse': 4.8190731875079174e-05}
+kf_score loss: {'abs_max': 0.0009140968322753906, 'abs_mean': 1.527339344060963e-05, 'rel_max': 0.0007758686392884896, 'rel_mean': 1.7841525840074413e-05, 'nz_rel_max': 0.0007758686392884896, 'nz_rel_mean': 1.7841525840074413e-05, 'mse': 8.189391532804073e-10, 'rmse': 2.8617112944537353e-05}
+warmup start
+warmup done
+[our] avg 4.8742 ms, min 4.8525 ms, max 4.9193 ms, 28197.338670082056 gflops/s (10 runs, 100 warmups, profiled)

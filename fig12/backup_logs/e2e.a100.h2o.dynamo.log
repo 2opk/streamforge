@@ -1,0 +1,14 @@
+model='h2o' system='dynamo' seqlen=4096 layer_num=None
+input_names=['q', 'k', 'v']
+output_names=['out', 'h2o_score']
+weight_zoo_path='/home/ppopp25_ae/ppopp25_ae/weight_zoo.json'
+hf_config.num_hidden_layers=32
+data_path='/home/ppopp25_ae/ppopp25_ae/vcsum.jsonl'
+token_ids.shape=torch.Size([1, 4096])
+token_ids.grad=None
+using safe tensor: files={'model-00001-of-00002.safetensors', 'model-00002-of-00002.safetensors'}
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 78.56it/s]
+  0%|          | 0/32 [00:00<?, ?it/s]  3%|▎         | 1/32 [00:00<00:03,  8.38it/s]  9%|▉         | 3/32 [00:00<00:02, 11.00it/s] 16%|█▌        | 5/32 [00:00<00:02, 11.69it/s] 22%|██▏       | 7/32 [00:00<00:02, 11.22it/s] 28%|██▊       | 9/32 [00:00<00:01, 11.86it/s] 34%|███▍      | 11/32 [00:00<00:01, 12.14it/s] 41%|████      | 13/32 [00:01<00:01, 12.53it/s] 47%|████▋     | 15/32 [00:01<00:01, 12.83it/s] 53%|█████▎    | 17/32 [00:01<00:01, 12.84it/s] 59%|█████▉    | 19/32 [00:01<00:01, 12.73it/s] 66%|██████▌   | 21/32 [00:01<00:00, 12.60it/s] 72%|███████▏  | 23/32 [00:01<00:00, 12.52it/s] 78%|███████▊  | 25/32 [00:02<00:00, 12.44it/s] 84%|████████▍ | 27/32 [00:02<00:00, 12.42it/s] 91%|█████████ | 29/32 [00:02<00:00, 12.24it/s] 97%|█████████▋| 31/32 [00:02<00:00, 11.83it/s]100%|██████████| 32/32 [00:02<00:00, 12.16it/s]
+warmup start
+warmup done
+[dynamo] avg 491.1255 ms, min 485.7459 ms, max 498.8799 ms (50 runs, 50 warmups, profiled)

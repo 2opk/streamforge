@@ -1,0 +1,14 @@
+model='gemma2' system='torch' seqlen=4096 layer_num=None
+input_names=['q', 'k', 'v']
+output_names=['out']
+weight_zoo_path='/home/ppopp25_ae/ppopp25_ae/weight_zoo.json'
+hf_config.num_hidden_layers=32
+data_path='/home/ppopp25_ae/ppopp25_ae/vcsum.jsonl'
+token_ids.shape=torch.Size([1, 4096])
+token_ids.grad=None
+using safe tensor: files={'model-00001-of-00002.safetensors', 'model-00002-of-00002.safetensors'}
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 60.35it/s]
+  0%|          | 0/32 [00:00<?, ?it/s]  6%|▋         | 2/32 [00:00<00:02, 12.68it/s] 12%|█▎        | 4/32 [00:00<00:02, 12.75it/s] 19%|█▉        | 6/32 [00:00<00:02, 12.67it/s] 25%|██▌       | 8/32 [00:00<00:01, 12.76it/s] 31%|███▏      | 10/32 [00:00<00:01, 12.68it/s] 38%|███▊      | 12/32 [00:00<00:01, 12.63it/s] 44%|████▍     | 14/32 [00:01<00:01, 12.96it/s] 50%|█████     | 16/32 [00:01<00:01, 13.11it/s] 56%|█████▋    | 18/32 [00:01<00:01, 13.16it/s] 62%|██████▎   | 20/32 [00:01<00:00, 13.19it/s] 69%|██████▉   | 22/32 [00:01<00:00, 13.07it/s] 75%|███████▌  | 24/32 [00:01<00:00, 12.94it/s] 81%|████████▏ | 26/32 [00:02<00:00, 12.90it/s] 88%|████████▊ | 28/32 [00:02<00:00, 12.68it/s] 94%|█████████▍| 30/32 [00:02<00:00, 12.60it/s]100%|██████████| 32/32 [00:02<00:00, 12.35it/s]100%|██████████| 32/32 [00:02<00:00, 12.76it/s]
+warmup start
+warmup done
+[torch] avg 969.9228 ms, min 966.0637 ms, max 972.5900 ms (50 runs, 50 warmups, profiled)

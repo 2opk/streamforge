@@ -1,0 +1,14 @@
+model='h2o' system='dynamo' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out', 'h2o_score']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=2397.265625
+gflops=137.438953472
+mib=2397.265625
+checking dynamo...
+out loss: {'abs_max': 0.001953125, 'abs_mean': 1.96095121012263e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 765.0, 'nz_rel_mean': 0.004503831692800552, 'mse': 1.3134914795580934e-09, 'rmse': 3.6242123000151266e-05}
+h2o_score loss: {'abs_max': 0.0006456375122070312, 'abs_mean': 1.3350920219964979e-05, 'rel_max': 0.000830924677312116, 'rel_mean': 1.7687495907753073e-05, 'nz_rel_max': 0.000830924677312116, 'nz_rel_mean': 1.7687495907753073e-05, 'mse': 6.654842752416485e-10, 'rmse': 2.5796981901797126e-05}
+warmup start
+warmup done
+[dynamo] avg 5.5828 ms, min 5.5585 ms, max 5.6682 ms, 24618.136765021653 gflops/s (10 runs, 100 warmups, profiled)

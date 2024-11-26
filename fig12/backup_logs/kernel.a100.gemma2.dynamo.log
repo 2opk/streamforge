@@ -1,0 +1,15 @@
+srun: job 181665 queued and waiting for resources
+srun: job 181665 has been allocated resources
+model='gemma2' system='dynamo' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=2396.265625
+gflops=137.438953472
+mib=2396.265625
+checking dynamo...
+out loss: {'abs_max': 0.0029296875, 'abs_mean': 3.545907817681382e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 1153.0, 'nz_rel_mean': 0.008119927117031401, 'mse': 3.5014817371958793e-09, 'rmse': 5.91733194708213e-05}
+warmup start
+warmup done
+[dynamo] avg 6.1648 ms, min 6.1193 ms, max 6.2194 ms, 22294.27163749032 gflops/s (10 runs, 100 warmups, profiled)

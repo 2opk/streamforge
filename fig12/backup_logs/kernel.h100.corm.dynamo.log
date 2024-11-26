@@ -1,0 +1,14 @@
+model='corm' system='dynamo' seqlen=4096
+input_names=['q', 'k', 'v', 'corm_mask']
+output_names=['out', 'corm_score']
+check=True
+start_peak_mem_mib=160.0
+end_peak_mem_mib=2273.0
+gflops=137.438953472
+mib=2273.0
+checking dynamo...
+out loss: {'abs_max': 0.001953125, 'abs_mean': 1.9596736592575326e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 1318.3333333333333, 'nz_rel_mean': 0.004411247435457833, 'mse': 1.3019333167047877e-09, 'rmse': 3.608231307309424e-05}
+corm_score loss: {'err_num': 0, 'err': 0.0}
+warmup start
+warmup done
+[dynamo] avg 4.6091 ms, min 4.5528 ms, max 4.9212 ms, 29819.146193774202 gflops/s (10 runs, 100 warmups, profiled)

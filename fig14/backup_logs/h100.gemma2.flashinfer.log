@@ -1,0 +1,15 @@
+srun: job 5090 queued and waiting for resources
+srun: job 5090 has been allocated resources
+model='gemma2' system='flashinfer' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=160.0
+gflops=137.438953472
+mib=160.0
+checking flashinfer...
+out loss: {'abs_max': 0.0029296875, 'abs_mean': 4.139050712481662e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 2339.0, 'nz_rel_mean': 0.0097025100171652, 'mse': 4.578303850009729e-09, 'rmse': 6.766316464672436e-05}
+warmup start
+warmup done
+[flashinfer] avg 0.7469 ms, min 0.7274 ms, max 0.7815 ms, 184002.2829657581 gflops/s (10 runs, 100 warmups, profiled)

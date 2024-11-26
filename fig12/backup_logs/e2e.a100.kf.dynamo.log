@@ -1,0 +1,14 @@
+model='kf' system='dynamo' seqlen=4096 layer_num=None
+input_names=['q', 'k', 'v', 'exp_rand']
+output_names=['out', 'kf_score']
+weight_zoo_path='/home/ppopp25_ae/ppopp25_ae/weight_zoo.json'
+hf_config.num_hidden_layers=32
+data_path='/home/ppopp25_ae/ppopp25_ae/vcsum.jsonl'
+token_ids.shape=torch.Size([1, 4096])
+token_ids.grad=None
+using safe tensor: files={'model-00001-of-00002.safetensors', 'model-00002-of-00002.safetensors'}
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 79.64it/s]
+  0%|          | 0/32 [00:00<?, ?it/s]  6%|▋         | 2/32 [00:00<00:01, 15.19it/s] 12%|█▎        | 4/32 [00:00<00:01, 15.33it/s] 19%|█▉        | 6/32 [00:00<00:01, 15.05it/s] 25%|██▌       | 8/32 [00:00<00:01, 14.50it/s] 31%|███▏      | 10/32 [00:00<00:01, 14.08it/s] 38%|███▊      | 12/32 [00:00<00:01, 14.20it/s] 44%|████▍     | 14/32 [00:00<00:01, 14.06it/s] 50%|█████     | 16/32 [00:01<00:01, 14.33it/s] 56%|█████▋    | 18/32 [00:01<00:00, 14.30it/s] 62%|██████▎   | 20/32 [00:01<00:00, 14.48it/s] 69%|██████▉   | 22/32 [00:01<00:00, 14.46it/s] 75%|███████▌  | 24/32 [00:01<00:00, 14.59it/s] 81%|████████▏ | 26/32 [00:01<00:00, 13.99it/s] 88%|████████▊ | 28/32 [00:01<00:00, 14.39it/s] 94%|█████████▍| 30/32 [00:02<00:00, 14.12it/s]100%|██████████| 32/32 [00:02<00:00, 14.07it/s]100%|██████████| 32/32 [00:02<00:00, 14.32it/s]
+warmup start
+warmup done
+[dynamo] avg 691.0468 ms, min 687.4623 ms, max 694.9048 ms (50 runs, 50 warmups, profiled)

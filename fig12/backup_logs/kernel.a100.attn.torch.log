@@ -1,0 +1,13 @@
+model='attn' system='torch' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=5256.125
+gflops=137.438953472
+mib=5256.125
+checking torch...
+out loss: {'abs_max': 0.0, 'abs_mean': 0.0, 'rel_max': nan, 'rel_mean': nan, 'nz_rel_max': 0.0, 'nz_rel_mean': 0.0, 'mse': 0.0, 'rmse': 0.0}
+warmup start
+warmup done
+[torch] avg 16.2139 ms, min 16.1579 ms, max 16.2518 ms, 8476.591138799457 gflops/s (10 runs, 100 warmups, profiled)

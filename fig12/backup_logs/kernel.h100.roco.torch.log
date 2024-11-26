@@ -1,0 +1,15 @@
+model='roco' system='torch' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out', 'roco_score', 'roco_sq_score']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=5569.00390625
+gflops=137.438953472
+mib=5569.00390625
+checking torch...
+out loss: {'abs_max': 0.0, 'abs_mean': 0.0, 'rel_max': nan, 'rel_mean': nan, 'nz_rel_max': 0.0, 'nz_rel_mean': 0.0, 'mse': 0.0, 'rmse': 0.0}
+roco_score loss: {'abs_max': 0.0, 'abs_mean': 0.0, 'rel_max': 0.0, 'rel_mean': 0.0, 'nz_rel_max': 0.0, 'nz_rel_mean': 0.0, 'mse': 0.0, 'rmse': 0.0}
+roco_sq_score loss: {'abs_max': 0.0, 'abs_mean': 0.0, 'rel_max': 0.0, 'rel_mean': 0.0, 'nz_rel_max': 0.0, 'nz_rel_mean': 0.0, 'mse': 0.0, 'rmse': 0.0}
+warmup start
+warmup done
+[torch] avg 16.4680 ms, min 16.4530 ms, max 16.5226 ms, 8345.83124931663 gflops/s (10 runs, 100 warmups, profiled)

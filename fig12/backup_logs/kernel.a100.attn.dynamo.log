@@ -1,0 +1,13 @@
+model='attn' system='dynamo' seqlen=4096
+input_names=['q', 'k', 'v']
+output_names=['out']
+check=True
+start_peak_mem_mib=96.0
+end_peak_mem_mib=1248.0
+gflops=137.438953472
+mib=1248.0
+checking dynamo...
+out loss: {'abs_max': 0.001953125, 'abs_mean': 2.566529170522358e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 1827.0, 'nz_rel_mean': 0.006076326900875512, 'mse': 2.0079828486557447e-09, 'rmse': 4.481052162891819e-05}
+warmup start
+warmup done
+[dynamo] avg 4.5805 ms, min 4.5018 ms, max 4.6508 ms, 30004.931882003286 gflops/s (10 runs, 100 warmups, profiled)

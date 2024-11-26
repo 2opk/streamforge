@@ -1,0 +1,1410 @@
+model='gemma2' system='tvm' seqlen=4096 layer_num=None
+input_names=['q', 'k', 'v']
+output_names=['out']
+[tvm ms]: target=cuda -keys=cuda,gpu -arch=sm_90a -l2_cache_size_bytes=52428800 -libs=cublas -max_num_threads=1024 -max_shared_memory_per_block=49152 -max_threads_per_block=1024 -registers_per_block=65536 -thread_warp_size=32
+[tvm ms]: log_file='Gemma2.json'
+[tvm ms]: kernel partitions: len(extracted_tasks)=7
+[tvm ms]: num_trials_per_iter=4
+[tvm ms]: max_trials_per_task=128
+[tvm ms]: max_trials_global=896
+2024-11-26 11:44:14 [INFO] Logging directory: ./tvm_tuned_1063831/logs
+2024-11-26 11:44:33 [INFO] LocalBuilder: max_workers = 64
+2024-11-26 11:44:35 [INFO] [task_scheduler.cc:159] Initializing Task #0: "fused_transpose_reshape_transpose"
+2024-11-26 11:44:35 [INFO] [task_scheduler.cc:159] Initializing Task #1: "fused_transpose_reshape_transpose_1"
+2024-11-26 11:44:35 [INFO] [task_scheduler.cc:159] Initializing Task #2: "fused_transpose_reshape"
+2024-11-26 11:44:36 [INFO] [task_scheduler.cc:159] Initializing Task #3: "fused_reshape_divide_divide_tanh_multiply_add_cast"
+2024-11-26 11:44:36 [INFO] [task_scheduler.cc:159] Initializing Task #4: "fused_nn_softmax_cast"
+2024-11-26 11:44:37 [INFO] [task_scheduler.cc:159] Initializing Task #5: "fused_reshape"
+2024-11-26 11:44:37 [INFO] [task_scheduler.cc:159] Initializing Task #6: "fused_reshape_transpose_reshape"
+2024-11-26 11:44:37 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  5 |                                      fused_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 0
+Total latency (us): 0
+
+2024-11-26 11:44:37 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #0: "fused_transpose_reshape_transpose"
+2024-11-26 11:44:39 [INFO] [task_scheduler.cc:193] Sending 1 sample(s) to builder
+2024-11-26 11:44:41 [INFO] [task_scheduler.cc:195] Sending 1 sample(s) to runner
+2024-11-26 11:44:44 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #1: "fused_transpose_reshape_transpose_1"
+2024-11-26 11:44:59 [INFO] [task_scheduler.cc:193] Sending 1 sample(s) to builder
+2024-11-26 11:45:02 [INFO] [task_scheduler.cc:195] Sending 1 sample(s) to runner
+2024-11-26 11:45:04 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #2: "fused_transpose_reshape"
+2024-11-26 11:45:19 [INFO] [task_scheduler.cc:193] Sending 1 sample(s) to builder
+2024-11-26 11:45:22 [INFO] [task_scheduler.cc:195] Sending 1 sample(s) to runner
+2024-11-26 11:45:24 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #3: "fused_reshape_divide_divide_tanh_multiply_add_cast"
+2024-11-26 11:45:42 [INFO] [task_scheduler.cc:193] Sending 1 sample(s) to builder
+2024-11-26 11:45:44 [INFO] [task_scheduler.cc:195] Sending 1 sample(s) to runner
+2024-11-26 11:46:42 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 11:46:59 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 11:47:07 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 11:50:31 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #5: "fused_reshape"
+2024-11-26 11:50:39 [INFO] [task_scheduler.cc:193] Sending 1 sample(s) to builder
+2024-11-26 11:50:43 [INFO] [task_scheduler.cc:195] Sending 1 sample(s) to runner
+2024-11-26 11:51:26 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #6: "fused_reshape_transpose_reshape"
+2024-11-26 11:51:35 [INFO] [task_scheduler.cc:193] Sending 1 sample(s) to builder
+2024-11-26 11:51:37 [INFO] [task_scheduler.cc:195] Sending 1 sample(s) to runner
+2024-11-26 11:51:39 [DEBUG] XGB iter   0: tr-p-rmse: 0.450000	tr-a-peak@32: 1.000000	tr-rmse: 0.450000	tr-rmse: 0.450000
+2024-11-26 11:51:41 [DEBUG] XGB iter  25: tr-p-rmse: 0.032305	tr-a-peak@32: 1.000000	tr-rmse: 0.032305	tr-rmse: 0.032305
+2024-11-26 11:51:43 [DEBUG] XGB iter  50: tr-p-rmse: 0.002319	tr-a-peak@32: 1.000000	tr-rmse: 0.002319	tr-rmse: 0.002319
+2024-11-26 11:51:45 [DEBUG] XGB iter  75: tr-p-rmse: 0.000166	tr-a-peak@32: 1.000000	tr-rmse: 0.000166	tr-rmse: 0.000166
+2024-11-26 11:51:47 [DEBUG] XGB iter 100: tr-p-rmse: 0.000012	tr-a-peak@32: 1.000000	tr-rmse: 0.000012	tr-rmse: 0.000012
+2024-11-26 11:51:49 [DEBUG] XGB iter 125: tr-p-rmse: 0.000001	tr-a-peak@32: 1.000000	tr-rmse: 0.000001	tr-rmse: 0.000001
+2024-11-26 11:51:50 [DEBUG] XGB iter 150: tr-p-rmse: 0.000000	tr-a-peak@32: 1.000000	tr-rmse: 0.000000	tr-rmse: 0.000000
+2024-11-26 11:51:50 [DEBUG] XGB iter 175: tr-p-rmse: 0.000000	tr-a-peak@32: 1.000000	tr-rmse: 0.000000	tr-rmse: 0.000000
+2024-11-26 11:51:50 [DEBUG] XGB stopped. Best iteration: [131] tr-p-rmse:0.00000	tr-a-peak@32:1.00000	tr-rmse:0.00000	tr-rmse:0.00000 
+2024-11-26 11:51:50 [INFO] [task_scheduler.cc:237] [Updated] Task #0: "fused_transpose_reshape_transpose"
+2024-11-26 11:51:50 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  5 |                                      fused_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 1
+Total latency (us): 340.633
+
+2024-11-26 11:51:50 [DEBUG] XGB iter   0: tr-p-rmse: 0.433333	tr-a-peak@32: 1.000000	tr-rmse: 0.433333	tr-rmse: 0.433333
+2024-11-26 11:51:50 [DEBUG] XGB iter  25: tr-p-rmse: 0.012109	tr-a-peak@32: 1.000000	tr-rmse: 0.012109	tr-rmse: 0.012109
+2024-11-26 11:51:50 [DEBUG] XGB iter  50: tr-p-rmse: 0.000338	tr-a-peak@32: 1.000000	tr-rmse: 0.000338	tr-rmse: 0.000338
+2024-11-26 11:51:50 [DEBUG] XGB iter  75: tr-p-rmse: 0.000009	tr-a-peak@32: 1.000000	tr-rmse: 0.000009	tr-rmse: 0.000009
+2024-11-26 11:51:50 [DEBUG] XGB iter 100: tr-p-rmse: 0.000000	tr-a-peak@32: 1.000000	tr-rmse: 0.000000	tr-rmse: 0.000000
+2024-11-26 11:51:50 [DEBUG] XGB iter 125: tr-p-rmse: 0.000000	tr-a-peak@32: 1.000000	tr-rmse: 0.000000	tr-rmse: 0.000000
+2024-11-26 11:51:51 [DEBUG] XGB stopped. Best iteration: [96] tr-p-rmse:0.00000	tr-a-peak@32:1.00000	tr-rmse:0.00000	tr-rmse:0.00000 
+2024-11-26 11:51:51 [INFO] [task_scheduler.cc:237] [Updated] Task #1: "fused_transpose_reshape_transpose_1"
+2024-11-26 11:51:51 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  5 |                                      fused_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 2
+Total latency (us): 991.161
+
+2024-11-26 11:51:51 [DEBUG] XGB iter   0: tr-p-rmse: 0.425000	tr-a-peak@32: 1.000000	tr-rmse: 0.425000	tr-rmse: 0.425000
+2024-11-26 11:51:51 [DEBUG] XGB iter  25: tr-p-rmse: 0.007309	tr-a-peak@32: 1.000000	tr-rmse: 0.007309	tr-rmse: 0.007309
+2024-11-26 11:51:51 [DEBUG] XGB iter  50: tr-p-rmse: 0.000126	tr-a-peak@32: 1.000000	tr-rmse: 0.000126	tr-rmse: 0.000126
+2024-11-26 11:51:51 [DEBUG] XGB iter  75: tr-p-rmse: 0.000002	tr-a-peak@32: 1.000000	tr-rmse: 0.000002	tr-rmse: 0.000002
+2024-11-26 11:51:51 [DEBUG] XGB iter 100: tr-p-rmse: 0.000000	tr-a-peak@32: 1.000000	tr-rmse: 0.000000	tr-rmse: 0.000000
+2024-11-26 11:51:51 [DEBUG] XGB iter 125: tr-p-rmse: 0.000000	tr-a-peak@32: 1.000000	tr-rmse: 0.000000	tr-rmse: 0.000000
+2024-11-26 11:51:51 [DEBUG] XGB stopped. Best iteration: [84] tr-p-rmse:0.00000	tr-a-peak@32:1.00000	tr-rmse:0.00000	tr-rmse:0.00000 
+2024-11-26 11:51:51 [INFO] [task_scheduler.cc:237] [Updated] Task #2: "fused_transpose_reshape"
+2024-11-26 11:51:51 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  5 |                                      fused_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 3
+Total latency (us): 1194.67
+
+2024-11-26 11:51:51 [DEBUG] XGB iter   0: tr-p-rmse: 0.420000	tr-a-peak@32: 1.000000	tr-rmse: 0.420000	tr-rmse: 0.420000
+2024-11-26 11:51:51 [DEBUG] XGB iter  25: tr-p-rmse: 0.005373	tr-a-peak@32: 1.000000	tr-rmse: 0.005373	tr-rmse: 0.005373
+2024-11-26 11:51:51 [DEBUG] XGB iter  50: tr-p-rmse: 0.000069	tr-a-peak@32: 1.000000	tr-rmse: 0.000069	tr-rmse: 0.000069
+2024-11-26 11:51:51 [DEBUG] XGB iter  75: tr-p-rmse: 0.000001	tr-a-peak@32: 1.000000	tr-rmse: 0.000001	tr-rmse: 0.000001
+2024-11-26 11:51:52 [DEBUG] XGB iter 100: tr-p-rmse: 0.000000	tr-a-peak@32: 1.000000	tr-rmse: 0.000000	tr-rmse: 0.000000
+2024-11-26 11:51:52 [DEBUG] XGB iter 125: tr-p-rmse: 0.000000	tr-a-peak@32: 1.000000	tr-rmse: 0.000000	tr-rmse: 0.000000
+2024-11-26 11:51:52 [DEBUG] XGB stopped. Best iteration: [78] tr-p-rmse:0.00000	tr-a-peak@32:1.00000	tr-rmse:0.00000	tr-rmse:0.00000 
+2024-11-26 11:51:52 [INFO] [task_scheduler.cc:237] [Updated] Task #3: "fused_reshape_divide_divide_tanh_multiply_add_cast"
+2024-11-26 11:51:52 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  5 |                                      fused_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 4
+Total latency (us): 4595.83
+
+2024-11-26 11:51:52 [DEBUG] XGB iter   0: tr-p-rmse: 0.426393	tr-a-peak@32: 1.000000	tr-rmse: 0.544860	tr-rmse: 0.544860
+2024-11-26 11:51:52 [DEBUG] XGB iter  25: tr-p-rmse: 0.023577	tr-a-peak@32: 1.000000	tr-rmse: 0.512024	tr-rmse: 0.512024
+2024-11-26 11:51:52 [DEBUG] XGB iter  50: tr-p-rmse: 0.023614	tr-a-peak@32: 1.000000	tr-rmse: 0.512002	tr-rmse: 0.512002
+2024-11-26 11:51:52 [DEBUG] XGB stopped. Best iteration: [22] tr-p-rmse:0.02276	tr-a-peak@32:1.00000	tr-rmse:0.51268	tr-rmse:0.51268 
+2024-11-26 11:51:52 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 11:51:52 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |      4 |      
+  5 |                                      fused_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 8
+Total latency (us): 6285.48
+
+2024-11-26 11:51:52 [INFO] [task_scheduler.cc:237] [Updated] Task #5: "fused_reshape"
+2024-11-26 11:51:52 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |      4 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |            N/A |          N/A |                   N/A |      0 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 9
+Total latency (us): 7850.93
+
+2024-11-26 11:51:52 [DEBUG] XGB iter   0: tr-p-rmse: 0.424463	tr-a-peak@32: 0.941484	tr-rmse: 0.528914	tr-rmse: 0.528914
+2024-11-26 11:51:52 [DEBUG] XGB iter  25: tr-p-rmse: 0.023076	tr-a-peak@32: 1.000000	tr-rmse: 0.478152	tr-rmse: 0.478152
+2024-11-26 11:51:52 [DEBUG] XGB iter  50: tr-p-rmse: 0.023089	tr-a-peak@32: 1.000000	tr-rmse: 0.478145	tr-rmse: 0.478145
+2024-11-26 11:51:52 [DEBUG] XGB stopped. Best iteration: [20] tr-p-rmse:0.02191	tr-a-peak@32:1.00000	tr-rmse:0.47902	tr-rmse:0.47902 
+2024-11-26 11:51:52 [INFO] [task_scheduler.cc:237] [Updated] Task #6: "fused_reshape_transpose_reshape"
+2024-11-26 11:51:52 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |      4 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 10
+Total latency (us): 7974.78
+
+2024-11-26 11:51:52 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #3: "fused_reshape_divide_divide_tanh_multiply_add_cast"
+2024-11-26 11:51:55 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 11:51:55 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 11:51:55 [INFO] [task_scheduler.cc:237] [Updated] Task #3: "fused_reshape_divide_divide_tanh_multiply_add_cast"
+2024-11-26 11:51:55 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |      4 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 10
+Total latency (us): 7974.78
+
+2024-11-26 11:51:55 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #3: "fused_reshape_divide_divide_tanh_multiply_add_cast"
+2024-11-26 11:51:59 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 11:51:59 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 11:51:59 [INFO] [task_scheduler.cc:237] [Updated] Task #3: "fused_reshape_divide_divide_tanh_multiply_add_cast"
+2024-11-26 11:51:59 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |      4 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 10
+Total latency (us): 7974.78
+
+2024-11-26 11:51:59 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 11:52:09 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 11:52:19 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 11:55:32 [DEBUG] XGB validation: p-rmse: 2.052513	a-peak@32: 0.835917
+2024-11-26 11:55:33 [DEBUG] XGB iter   0: tr-p-rmse: 0.578197	tr-a-peak@32: 0.935277	tr-rmse: 0.501621	tr-rmse: 0.501621
+2024-11-26 11:55:35 [DEBUG] XGB iter  25: tr-p-rmse: 0.028516	tr-a-peak@32: 1.000000	tr-rmse: 0.450445	tr-rmse: 0.450445
+2024-11-26 11:55:36 [DEBUG] XGB iter  50: tr-p-rmse: 0.028538	tr-a-peak@32: 1.000000	tr-rmse: 0.450424	tr-rmse: 0.450424
+2024-11-26 11:55:37 [DEBUG] XGB stopped. Best iteration: [22] tr-p-rmse:0.02816	tr-a-peak@32:1.00000	tr-rmse:0.45087	tr-rmse:0.45087 
+2024-11-26 11:55:37 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 11:55:37 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |      8 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 14
+Total latency (us): 7974.78
+
+2024-11-26 11:55:37 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #5: "fused_reshape"
+2024-11-26 11:55:40 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 11:55:40 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 11:55:40 [INFO] [task_scheduler.cc:237] [Updated] Task #5: "fused_reshape"
+2024-11-26 11:55:40 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |      8 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 14
+Total latency (us): 7974.78
+
+2024-11-26 11:55:40 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #3: "fused_reshape_divide_divide_tanh_multiply_add_cast"
+2024-11-26 11:55:43 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 11:55:43 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 11:55:43 [INFO] [task_scheduler.cc:237] [Updated] Task #3: "fused_reshape_divide_divide_tanh_multiply_add_cast"
+2024-11-26 11:55:43 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |      8 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 14
+Total latency (us): 7974.78
+
+2024-11-26 11:55:43 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #3: "fused_reshape_divide_divide_tanh_multiply_add_cast"
+2024-11-26 11:55:46 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 11:55:46 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 11:55:46 [INFO] [task_scheduler.cc:237] [Updated] Task #3: "fused_reshape_divide_divide_tanh_multiply_add_cast"
+2024-11-26 11:55:46 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |      8 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 14
+Total latency (us): 7974.78
+
+2024-11-26 11:55:46 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 11:55:57 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 11:56:03 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 11:59:14 [DEBUG] XGB validation: p-rmse: 0.083187	a-peak@32: 1.000000
+2024-11-26 11:59:15 [DEBUG] XGB iter   0: tr-p-rmse: 0.554883	tr-a-peak@32: 1.000000	tr-rmse: 0.466971	tr-rmse: 0.466971
+2024-11-26 11:59:17 [DEBUG] XGB iter  25: tr-p-rmse: 0.041235	tr-a-peak@32: 1.000000	tr-rmse: 0.422130	tr-rmse: 0.422130
+2024-11-26 11:59:18 [DEBUG] XGB iter  50: tr-p-rmse: 0.041241	tr-a-peak@32: 1.000000	tr-rmse: 0.422126	tr-rmse: 0.422126
+2024-11-26 11:59:19 [DEBUG] XGB stopped. Best iteration: [20] tr-p-rmse:0.04029	tr-a-peak@32:1.00000	tr-rmse:0.42278	tr-rmse:0.42278 
+2024-11-26 11:59:19 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 11:59:19 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     12 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 18
+Total latency (us): 7974.78
+
+2024-11-26 11:59:19 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #5: "fused_reshape"
+2024-11-26 11:59:22 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 11:59:22 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 11:59:22 [INFO] [task_scheduler.cc:237] [Updated] Task #5: "fused_reshape"
+2024-11-26 11:59:22 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |      
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     12 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 18
+Total latency (us): 7974.78
+
+2024-11-26 11:59:22 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #3: "fused_reshape_divide_divide_tanh_multiply_add_cast"
+2024-11-26 11:59:25 [INFO] [task_scheduler.cc:260] Task #3 has finished. Remaining task(s): 6
+2024-11-26 11:59:25 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     12 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 18
+Total latency (us): 7974.78
+
+2024-11-26 11:59:25 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #1: "fused_transpose_reshape_transpose_1"
+2024-11-26 11:59:27 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 11:59:27 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 11:59:27 [INFO] [task_scheduler.cc:237] [Updated] Task #1: "fused_transpose_reshape_transpose_1"
+2024-11-26 11:59:27 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     12 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 18
+Total latency (us): 7974.78
+
+2024-11-26 11:59:27 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 11:59:37 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 11:59:43 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:02:54 [DEBUG] XGB validation: p-rmse: 0.094566	a-peak@32: 1.000000
+2024-11-26 12:02:55 [DEBUG] XGB iter   0: tr-p-rmse: 0.475190	tr-a-peak@32: 0.962702	tr-rmse: 0.445481	tr-rmse: 0.445481
+2024-11-26 12:02:57 [DEBUG] XGB iter  25: tr-p-rmse: 0.036279	tr-a-peak@32: 1.000000	tr-rmse: 0.411626	tr-rmse: 0.411626
+2024-11-26 12:02:59 [DEBUG] XGB iter  50: tr-p-rmse: 0.036280	tr-a-peak@32: 1.000000	tr-rmse: 0.411626	tr-rmse: 0.411626
+2024-11-26 12:03:00 [DEBUG] XGB stopped. Best iteration: [20] tr-p-rmse:0.03603	tr-a-peak@32:1.00000	tr-rmse:0.41195	tr-rmse:0.41195 
+2024-11-26 12:03:00 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:03:00 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     16 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 22
+Total latency (us): 7974.78
+
+2024-11-26 12:03:00 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #5: "fused_reshape"
+2024-11-26 12:03:02 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 12:03:02 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 12:03:02 [INFO] [task_scheduler.cc:237] [Updated] Task #5: "fused_reshape"
+2024-11-26 12:03:02 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     16 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 22
+Total latency (us): 7974.78
+
+2024-11-26 12:03:02 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:03:13 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:03:19 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:06:29 [DEBUG] XGB validation: p-rmse: 0.054278	a-peak@32: 0.946417
+2024-11-26 12:06:29 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:06:29 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     20 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 26
+Total latency (us): 7974.78
+
+2024-11-26 12:06:29 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #5: "fused_reshape"
+2024-11-26 12:06:36 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 12:06:36 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 12:06:36 [INFO] [task_scheduler.cc:237] [Updated] Task #5: "fused_reshape"
+2024-11-26 12:06:36 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     20 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 26
+Total latency (us): 7974.78
+
+2024-11-26 12:06:36 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #0: "fused_transpose_reshape_transpose"
+2024-11-26 12:06:38 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 12:06:38 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 12:06:38 [INFO] [task_scheduler.cc:237] [Updated] Task #0: "fused_transpose_reshape_transpose"
+2024-11-26 12:06:38 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     20 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 26
+Total latency (us): 7974.78
+
+2024-11-26 12:06:38 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:06:49 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:06:55 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:10:07 [DEBUG] XGB validation: p-rmse: 0.022150	a-peak@32: 1.000000
+2024-11-26 12:10:07 [DEBUG] XGB iter   0: tr-p-rmse: 0.454498	tr-a-peak@32: 0.966830	tr-rmse: 0.397921	tr-rmse: 0.397921
+2024-11-26 12:10:09 [DEBUG] XGB iter  25: tr-p-rmse: 0.040879	tr-a-peak@32: 1.000000	tr-rmse: 0.377591	tr-rmse: 0.377591
+2024-11-26 12:10:10 [DEBUG] XGB iter  50: tr-p-rmse: 0.040879	tr-a-peak@32: 1.000000	tr-rmse: 0.377591	tr-rmse: 0.377591
+2024-11-26 12:10:11 [DEBUG] XGB stopped. Best iteration: [20] tr-p-rmse:0.04060	tr-a-peak@32:1.00000	tr-rmse:0.37781	tr-rmse:0.37781 
+2024-11-26 12:10:11 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:10:11 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     24 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 30
+Total latency (us): 7974.78
+
+2024-11-26 12:10:11 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #1: "fused_transpose_reshape_transpose_1"
+2024-11-26 12:10:15 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 12:10:15 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 12:10:15 [INFO] [task_scheduler.cc:237] [Updated] Task #1: "fused_transpose_reshape_transpose_1"
+2024-11-26 12:10:15 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     24 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |      
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 30
+Total latency (us): 7974.78
+
+2024-11-26 12:10:15 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #5: "fused_reshape"
+2024-11-26 12:10:16 [INFO] [task_scheduler.cc:260] Task #5 has finished. Remaining task(s): 5
+2024-11-26 12:10:16 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     24 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 30
+Total latency (us): 7974.78
+
+2024-11-26 12:10:16 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:10:26 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:10:33 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:13:45 [DEBUG] XGB validation: p-rmse: 0.033941	a-peak@32: 1.000000
+2024-11-26 12:13:45 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:13:45 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     28 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 34
+Total latency (us): 7974.78
+
+2024-11-26 12:13:45 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:14:00 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:14:07 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:17:20 [DEBUG] XGB validation: p-rmse: 0.083810	a-peak@32: 1.000000
+2024-11-26 12:17:20 [DEBUG] XGB iter   0: tr-p-rmse: 0.454125	tr-a-peak@32: 0.999972	tr-rmse: 0.443395	tr-rmse: 0.443395
+2024-11-26 12:17:22 [DEBUG] XGB iter  25: tr-p-rmse: 0.036651	tr-a-peak@32: 0.999991	tr-rmse: 0.427562	tr-rmse: 0.427562
+2024-11-26 12:17:23 [DEBUG] XGB iter  50: tr-p-rmse: 0.036651	tr-a-peak@32: 0.999991	tr-rmse: 0.427562	tr-rmse: 0.427562
+2024-11-26 12:17:25 [DEBUG] XGB stopped. Best iteration: [21] tr-p-rmse:0.03649	tr-a-peak@32:0.99999	tr-rmse:0.42771	tr-rmse:0.42771 
+2024-11-26 12:17:25 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:17:25 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     32 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 38
+Total latency (us): 7974.78
+
+2024-11-26 12:17:25 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #1: "fused_transpose_reshape_transpose_1"
+2024-11-26 12:17:27 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 12:17:27 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 12:17:27 [INFO] [task_scheduler.cc:237] [Updated] Task #1: "fused_transpose_reshape_transpose_1"
+2024-11-26 12:17:27 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     32 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 38
+Total latency (us): 7974.78
+
+2024-11-26 12:17:27 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:17:37 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:17:45 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:20:56 [DEBUG] XGB validation: p-rmse: 0.029961	a-peak@32: 1.000000
+2024-11-26 12:20:56 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:20:56 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     36 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 42
+Total latency (us): 7974.78
+
+2024-11-26 12:20:56 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #2: "fused_transpose_reshape"
+2024-11-26 12:21:03 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 12:21:03 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 12:21:03 [INFO] [task_scheduler.cc:237] [Updated] Task #2: "fused_transpose_reshape"
+2024-11-26 12:21:03 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     36 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 42
+Total latency (us): 7974.78
+
+2024-11-26 12:21:03 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:21:14 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:21:21 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:24:33 [DEBUG] XGB validation: p-rmse: 0.036373	a-peak@32: 0.953107
+2024-11-26 12:24:33 [DEBUG] XGB iter   0: tr-p-rmse: 0.442807	tr-a-peak@32: 0.954305	tr-rmse: 0.418182	tr-rmse: 0.418182
+2024-11-26 12:24:37 [DEBUG] XGB iter  25: tr-p-rmse: 0.028869	tr-a-peak@32: 0.999991	tr-rmse: 0.405499	tr-rmse: 0.405499
+2024-11-26 12:24:39 [DEBUG] XGB iter  50: tr-p-rmse: 0.028869	tr-a-peak@32: 0.999991	tr-rmse: 0.405499	tr-rmse: 0.405499
+2024-11-26 12:24:39 [DEBUG] XGB stopped. Best iteration: [18] tr-p-rmse:0.02871	tr-a-peak@32:0.99999	tr-rmse:0.40565	tr-rmse:0.40565 
+2024-11-26 12:24:39 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:24:39 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     40 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 46
+Total latency (us): 7974.78
+
+2024-11-26 12:24:39 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #0: "fused_transpose_reshape_transpose"
+2024-11-26 12:24:40 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 12:24:40 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 12:24:40 [INFO] [task_scheduler.cc:237] [Updated] Task #0: "fused_transpose_reshape_transpose"
+2024-11-26 12:24:40 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     40 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 46
+Total latency (us): 7974.78
+
+2024-11-26 12:24:40 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:24:51 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:24:58 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:28:10 [DEBUG] XGB validation: p-rmse: 0.066250	a-peak@32: 1.000000
+2024-11-26 12:28:10 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:28:10 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     44 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 50
+Total latency (us): 7974.78
+
+2024-11-26 12:28:10 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #1: "fused_transpose_reshape_transpose_1"
+2024-11-26 12:28:17 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 12:28:17 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 12:28:17 [INFO] [task_scheduler.cc:237] [Updated] Task #1: "fused_transpose_reshape_transpose_1"
+2024-11-26 12:28:17 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     44 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 50
+Total latency (us): 7974.78
+
+2024-11-26 12:28:17 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:28:27 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:28:34 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:31:03 [DEBUG] XGB validation: p-rmse: 0.388963	a-peak@32: 0.750000
+2024-11-26 12:31:03 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:31:03 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     48 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 54
+Total latency (us): 7974.78
+
+2024-11-26 12:31:03 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:31:14 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:31:20 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:31:20 [DEBUG] XGB validation: p-rmse: 0.281273	a-peak@32: 1.000000
+2024-11-26 12:31:21 [DEBUG] XGB iter   0: tr-p-rmse: 0.482963	tr-a-peak@32: 0.917729	tr-rmse: 0.399072	tr-rmse: 0.399072
+2024-11-26 12:31:21 [DEBUG] XGB iter  25: tr-p-rmse: 0.106160	tr-a-peak@32: 0.999991	tr-rmse: 0.389884	tr-rmse: 0.389884
+2024-11-26 12:31:21 [DEBUG] XGB iter  50: tr-p-rmse: 0.106162	tr-a-peak@32: 0.999991	tr-rmse: 0.389883	tr-rmse: 0.389883
+2024-11-26 12:31:21 [DEBUG] XGB stopped. Best iteration: [18] tr-p-rmse:0.10551	tr-a-peak@32:0.99999	tr-rmse:0.39023	tr-rmse:0.39023 
+2024-11-26 12:31:21 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:31:21 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |      
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     52 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 58
+Total latency (us): 7974.78
+
+2024-11-26 12:31:21 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #1: "fused_transpose_reshape_transpose_1"
+2024-11-26 12:31:23 [INFO] [task_scheduler.cc:260] Task #1 has finished. Remaining task(s): 4
+2024-11-26 12:31:23 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     52 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 58
+Total latency (us): 7974.78
+
+2024-11-26 12:31:23 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:31:33 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:31:39 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:31:39 [DEBUG] XGB validation: p-rmse: 0.281688	a-peak@32: 1.000000
+2024-11-26 12:31:39 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:31:39 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     56 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 62
+Total latency (us): 7974.78
+
+2024-11-26 12:31:39 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #6: "fused_reshape_transpose_reshape"
+2024-11-26 12:31:41 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 12:31:41 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 12:31:41 [INFO] [task_scheduler.cc:237] [Updated] Task #6: "fused_reshape_transpose_reshape"
+2024-11-26 12:31:41 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     56 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 62
+Total latency (us): 7974.78
+
+2024-11-26 12:31:41 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:31:52 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:32:00 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:32:00 [DEBUG] XGB validation: p-rmse: 0.341844	a-peak@32: 1.000000
+2024-11-26 12:32:00 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:32:00 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     60 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 66
+Total latency (us): 7974.78
+
+2024-11-26 12:32:00 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #0: "fused_transpose_reshape_transpose"
+2024-11-26 12:32:02 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 12:32:02 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 12:32:02 [INFO] [task_scheduler.cc:237] [Updated] Task #0: "fused_transpose_reshape_transpose"
+2024-11-26 12:32:02 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     60 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 66
+Total latency (us): 7974.78
+
+2024-11-26 12:32:02 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:32:12 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:32:19 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:35:32 [DEBUG] XGB validation: p-rmse: 0.043923	a-peak@32: 1.000000
+2024-11-26 12:35:33 [DEBUG] XGB iter   0: tr-p-rmse: 0.504781	tr-a-peak@32: 0.930402	tr-rmse: 0.388205	tr-rmse: 0.388205
+2024-11-26 12:35:35 [DEBUG] XGB iter  25: tr-p-rmse: 0.147069	tr-a-peak@32: 0.999991	tr-rmse: 0.381687	tr-rmse: 0.381687
+2024-11-26 12:35:36 [DEBUG] XGB iter  50: tr-p-rmse: 0.147069	tr-a-peak@32: 0.999991	tr-rmse: 0.381687	tr-rmse: 0.381687
+2024-11-26 12:35:37 [DEBUG] XGB stopped. Best iteration: [15] tr-p-rmse:0.14614	tr-a-peak@32:0.99999	tr-rmse:0.38216	tr-rmse:0.38216 
+2024-11-26 12:35:37 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:35:37 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     64 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 70
+Total latency (us): 7974.78
+
+2024-11-26 12:35:37 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:35:48 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:35:55 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:39:07 [DEBUG] XGB validation: p-rmse: 0.028033	a-peak@32: 1.000000
+2024-11-26 12:39:07 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:39:07 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     68 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 74
+Total latency (us): 7974.78
+
+2024-11-26 12:39:07 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #2: "fused_transpose_reshape"
+2024-11-26 12:39:15 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 12:39:15 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 12:39:15 [INFO] [task_scheduler.cc:237] [Updated] Task #2: "fused_transpose_reshape"
+2024-11-26 12:39:15 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     68 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 74
+Total latency (us): 7974.78
+
+2024-11-26 12:39:15 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:39:25 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:39:31 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:42:44 [DEBUG] XGB validation: p-rmse: 0.029160	a-peak@32: 0.984532
+2024-11-26 12:42:44 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:42:44 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     72 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 78
+Total latency (us): 7974.78
+
+2024-11-26 12:42:44 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:42:59 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:43:06 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:43:59 [DEBUG] XGB validation: p-rmse: 0.438819	a-peak@32: 1.000000
+2024-11-26 12:43:59 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:43:59 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     76 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 82
+Total latency (us): 7974.78
+
+2024-11-26 12:43:59 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:44:09 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:44:16 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:45:53 [DEBUG] XGB validation: p-rmse: 0.179781	a-peak@32: 1.000000
+2024-11-26 12:45:53 [DEBUG] XGB iter   0: tr-p-rmse: 0.513626	tr-a-peak@32: 0.917600	tr-rmse: 0.365254	tr-rmse: 0.365254
+2024-11-26 12:45:55 [DEBUG] XGB iter  25: tr-p-rmse: 0.178801	tr-a-peak@32: 0.999991	tr-rmse: 0.363721	tr-rmse: 0.363721
+2024-11-26 12:45:57 [DEBUG] XGB iter  50: tr-p-rmse: 0.178801	tr-a-peak@32: 0.999991	tr-rmse: 0.363721	tr-rmse: 0.363721
+2024-11-26 12:45:58 [DEBUG] XGB stopped. Best iteration: [14] tr-p-rmse:0.17689	tr-a-peak@32:0.99999	tr-rmse:0.36428	tr-rmse:0.36428 
+2024-11-26 12:45:58 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:45:58 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     80 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 86
+Total latency (us): 7974.78
+
+2024-11-26 12:45:58 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #0: "fused_transpose_reshape_transpose"
+2024-11-26 12:46:01 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 12:46:01 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 12:46:01 [INFO] [task_scheduler.cc:237] [Updated] Task #0: "fused_transpose_reshape_transpose"
+2024-11-26 12:46:01 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     80 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 86
+Total latency (us): 7974.78
+
+2024-11-26 12:46:01 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:46:11 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:46:18 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:49:31 [DEBUG] XGB validation: p-rmse: 0.059376	a-peak@32: 0.964382
+2024-11-26 12:49:31 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:49:31 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     84 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 90
+Total latency (us): 7974.78
+
+2024-11-26 12:49:31 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:49:47 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:49:53 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:53:05 [DEBUG] XGB validation: p-rmse: 0.041899	a-peak@32: 1.000000
+2024-11-26 12:53:05 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:53:05 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     88 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 94
+Total latency (us): 7974.78
+
+2024-11-26 12:53:05 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:53:21 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:53:39 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 12:56:52 [DEBUG] XGB validation: p-rmse: 0.089972	a-peak@32: 0.999987
+2024-11-26 12:56:52 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:56:52 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     92 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 98
+Total latency (us): 7974.78
+
+2024-11-26 12:56:52 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 12:57:08 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 12:57:15 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 13:00:28 [DEBUG] XGB validation: p-rmse: 0.060786	a-peak@32: 0.914990
+2024-11-26 13:00:28 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:00:28 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1270.9627 |    1689.6512 |             1689.6512 |     96 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 102
+Total latency (us): 7974.78
+
+2024-11-26 13:00:28 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:00:59 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 13:01:05 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 13:04:15 [DEBUG] XGB validation: p-rmse: 0.152255	a-peak@32: 0.999896
+2024-11-26 13:04:15 [DEBUG] XGB iter   0: tr-p-rmse: 0.502603	tr-a-peak@32: 0.935862	tr-rmse: 0.443489	tr-rmse: 0.443489
+2024-11-26 13:04:17 [DEBUG] XGB iter  25: tr-p-rmse: 0.151698	tr-a-peak@32: 0.999977	tr-rmse: 0.441483	tr-rmse: 0.441483
+2024-11-26 13:04:19 [DEBUG] XGB iter  50: tr-p-rmse: 0.151698	tr-a-peak@32: 0.999977	tr-rmse: 0.441483	tr-rmse: 0.441483
+2024-11-26 13:04:20 [DEBUG] XGB stopped. Best iteration: [12] tr-p-rmse:0.15065	tr-a-peak@32:0.99998	tr-rmse:0.44194	tr-rmse:0.44194 
+2024-11-26 13:04:20 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:04:20 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |      
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    100 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 106
+Total latency (us): 7974.71
+
+2024-11-26 13:04:20 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #0: "fused_transpose_reshape_transpose"
+2024-11-26 13:04:28 [INFO] [task_scheduler.cc:260] Task #0 has finished. Remaining task(s): 3
+2024-11-26 13:04:28 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    100 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 106
+Total latency (us): 7974.71
+
+2024-11-26 13:04:28 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #2: "fused_transpose_reshape"
+2024-11-26 13:04:35 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 13:04:35 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 13:04:35 [INFO] [task_scheduler.cc:237] [Updated] Task #2: "fused_transpose_reshape"
+2024-11-26 13:04:35 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    100 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 106
+Total latency (us): 7974.71
+
+2024-11-26 13:04:35 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:05:00 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 13:05:07 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 13:06:00 [DEBUG] XGB validation: p-rmse: 0.548161	a-peak@32: 1.000000
+2024-11-26 13:06:00 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:06:00 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    104 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 110
+Total latency (us): 7974.71
+
+2024-11-26 13:06:00 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:06:25 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 13:06:32 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 13:09:04 [DEBUG] XGB validation: p-rmse: 0.363508	a-peak@32: 1.000000
+2024-11-26 13:09:04 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:09:04 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    108 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 114
+Total latency (us): 7974.71
+
+2024-11-26 13:09:04 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:09:29 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 13:09:37 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 13:09:37 [DEBUG] XGB validation: p-rmse: 0.503010	a-peak@32: 1.000000
+2024-11-26 13:09:37 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:09:37 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    112 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 118
+Total latency (us): 7974.71
+
+2024-11-26 13:09:37 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #6: "fused_reshape_transpose_reshape"
+2024-11-26 13:09:44 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 13:09:44 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 13:09:44 [INFO] [task_scheduler.cc:237] [Updated] Task #6: "fused_reshape_transpose_reshape"
+2024-11-26 13:09:44 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    112 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 118
+Total latency (us): 7974.71
+
+2024-11-26 13:09:44 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:10:10 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 13:10:16 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 13:11:58 [DEBUG] XGB validation: p-rmse: 0.418058	a-peak@32: 0.750000
+2024-11-26 13:11:58 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:11:58 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    116 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 122
+Total latency (us): 7974.71
+
+2024-11-26 13:11:58 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:12:24 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 13:12:31 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 13:12:31 [DEBUG] XGB validation: p-rmse: 0.475478	a-peak@32: 1.000000
+2024-11-26 13:12:31 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:12:31 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    120 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 126
+Total latency (us): 7974.71
+
+2024-11-26 13:12:31 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:12:56 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 13:13:02 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 13:15:28 [DEBUG] XGB validation: p-rmse: 0.308779	a-peak@32: 0.749998
+2024-11-26 13:15:29 [DEBUG] XGB iter   0: tr-p-rmse: 0.538874	tr-a-peak@32: 0.713956	tr-rmse: 0.438635	tr-rmse: 0.438635
+2024-11-26 13:15:31 [DEBUG] XGB iter  25: tr-p-rmse: 0.241048	tr-a-peak@32: 0.999969	tr-rmse: 0.438690	tr-rmse: 0.438690
+2024-11-26 13:15:33 [DEBUG] XGB iter  50: tr-p-rmse: 0.241048	tr-a-peak@32: 0.999969	tr-rmse: 0.438690	tr-rmse: 0.438690
+2024-11-26 13:15:33 [DEBUG] XGB stopped. Best iteration: [13] tr-p-rmse:0.23912	tr-a-peak@32:0.99997	tr-rmse:0.43892	tr-rmse:0.43892 
+2024-11-26 13:15:33 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:15:33 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    124 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 130
+Total latency (us): 7974.71
+
+2024-11-26 13:15:33 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:15:59 [INFO] [task_scheduler.cc:193] Sending 4 sample(s) to builder
+2024-11-26 13:16:06 [INFO] [task_scheduler.cc:195] Sending 4 sample(s) to runner
+2024-11-26 13:19:18 [DEBUG] XGB validation: p-rmse: 0.024454	a-peak@32: 1.000000
+2024-11-26 13:19:18 [INFO] [task_scheduler.cc:237] [Updated] Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:19:18 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    128 |      
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 134
+Total latency (us): 7974.71
+
+2024-11-26 13:19:18 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #4: "fused_nn_softmax_cast"
+2024-11-26 13:19:18 [INFO] [task_scheduler.cc:260] Task #4 has finished. Remaining task(s): 2
+2024-11-26 13:19:18 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    128 |    Y 
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 134
+Total latency (us): 7974.71
+
+2024-11-26 13:19:18 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #2: "fused_transpose_reshape"
+2024-11-26 13:19:30 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 13:19:30 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 13:19:30 [INFO] [task_scheduler.cc:237] [Updated] Task #2: "fused_transpose_reshape"
+2024-11-26 13:19:30 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    128 |    Y 
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 134
+Total latency (us): 7974.71
+
+2024-11-26 13:19:30 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #6: "fused_reshape_transpose_reshape"
+2024-11-26 13:19:38 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 13:19:38 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 13:19:38 [INFO] [task_scheduler.cc:237] [Updated] Task #6: "fused_reshape_transpose_reshape"
+2024-11-26 13:19:38 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |      
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    128 |    Y 
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 134
+Total latency (us): 7974.71
+
+2024-11-26 13:19:38 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #2: "fused_transpose_reshape"
+2024-11-26 13:19:44 [INFO] [task_scheduler.cc:260] Task #2 has finished. Remaining task(s): 1
+2024-11-26 13:19:44 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |    Y 
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    128 |    Y 
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 134
+Total latency (us): 7974.71
+
+2024-11-26 13:19:44 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #6: "fused_reshape_transpose_reshape"
+2024-11-26 13:19:52 [INFO] [task_scheduler.cc:193] Sending 0 sample(s) to builder
+2024-11-26 13:19:52 [INFO] [task_scheduler.cc:195] Sending 0 sample(s) to runner
+2024-11-26 13:19:52 [INFO] [task_scheduler.cc:237] [Updated] Task #6: "fused_reshape_transpose_reshape"
+2024-11-26 13:19:52 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |    Y 
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    128 |    Y 
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |      
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 134
+Total latency (us): 7974.71
+
+2024-11-26 13:19:52 [INFO] [task_scheduler.cc:180] TaskScheduler picks Task #6: "fused_reshape_transpose_reshape"
+2024-11-26 13:19:59 [INFO] [task_scheduler.cc:260] Task #6 has finished. Remaining task(s): 0
+2024-11-26 13:19:59 [INFO] [task_scheduler.cc:320] 
+ ID |                                               Name |       FLOP | Weight | Speed (GFLOPS) | Latency (us) | Weighted Latency (us) | Trials | Done 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+  0 |                  fused_transpose_reshape_transpose |          1 |      1 |         0.0000 |     340.6331 |              340.6331 |      1 |    Y 
+  1 |                fused_transpose_reshape_transpose_1 |          1 |      1 |         0.0000 |     650.5278 |              650.5278 |      1 |    Y 
+  2 |                            fused_transpose_reshape |          1 |      1 |         0.0000 |     203.5070 |              203.5070 |      1 |    Y 
+  3 | fused_reshape_divide_divide_tanh_multiply_add_cast | 2147483648 |      1 |       631.3969 |    3401.1627 |             3401.1627 |      1 |    Y 
+  4 |                              fused_nn_softmax_cast | 2147483648 |      1 |      1271.0193 |    1689.5759 |             1689.5759 |    128 |    Y 
+  5 |                                      fused_reshape |          1 |      1 |         0.0000 |    1565.4474 |             1565.4474 |      1 |    Y 
+  6 |                    fused_reshape_transpose_reshape |          1 |      1 |         0.0000 |     123.8525 |              123.8525 |      1 |    Y 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Total trials: 134
+Total latency (us): 7974.71
+
+[tvm ms] profile done, compiling
+[tvm ms]: tuning time
+ ID |                                        Name | Time (min) | Percentage 
+----------------------------------------------------------------------------
+    |                                       Total |    95.8229 |   100.0000 
+  1 |                                SendToRunner |    78.3022 |    81.7155 
+  2 |                               SendToBuilder |     4.1371 |     4.3174 
+  3 |              EvoSearch/SampleInitPopulation |     3.2860 |     3.4292 
+  4 |     EvoSearch/Evolve/PredictNormalizedScore |     3.2579 |     3.3999 
+  5 |                   EvoSearch/Evolve/Mutation |     3.2150 |     3.3551 
+  6 |                       EvoSearch/Evolve/Misc |     1.4522 |     1.5155 
+  7 |             MeasureCallback/UpdateCostModel |     1.3660 |     1.4255 
+  8 |              EvoSearch/PickBestFromDatabase |     0.3095 |     0.3230 
+  9 |                       PostTuningCompilation |     0.0267 |     0.0279 
+ 10 |                              TaskExtraction |     0.0073 |     0.0076 
+ 11 |               MeasureCallback/AddToDatabase |     0.0030 |     0.0032 
+ 12 |                 EvoSearch/PickWithEpsGreedy |     0.0005 |     0.0006 
+ 13 |         MeasureCallback/RemoveBuildArtifact |     0.0004 |     0.0004 
+ 14 |                              InitializeTask |     0.0003 |     0.0003 
+ 15 |                           JoinRunnerFutures |     0.0001 |     0.0001 
+ 16 | EvoSearch/Evolve/Misc/CopyMeasuredWorkloads |     0.0000 |     0.0000 
+----------------------------------------------------------------------------
+[tvm ms] eval inference
+Execution time summary:
+ mean (ms)   median (ms)    max (ms)     min (ms)     std (ms)  
+   7.7245       7.7245       7.7245       7.7245       0.0000                  
+weight_zoo_path='/home/ppopp25_ae/ppopp25_ae/weight_zoo.json'
+hf_config.num_hidden_layers=32
+data_path='/home/ppopp25_ae/ppopp25_ae/vcsum.jsonl'
+token_ids.shape=torch.Size([1, 4096])
+token_ids.grad=None
+using safe tensor: files={'model-00001-of-00002.safetensors', 'model-00002-of-00002.safetensors'}
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 183.07it/s]
+  0%|          | 0/32 [00:00<?, ?it/s]  6%|▋         | 2/32 [00:00<00:02, 11.61it/s] 12%|█▎        | 4/32 [00:00<00:02, 11.54it/s] 19%|█▉        | 6/32 [00:00<00:02, 11.62it/s] 25%|██▌       | 8/32 [00:00<00:02, 11.56it/s] 31%|███▏      | 10/32 [00:00<00:01, 11.57it/s] 38%|███▊      | 12/32 [00:01<00:01, 11.58it/s] 44%|████▍     | 14/32 [00:01<00:01, 11.51it/s] 50%|█████     | 16/32 [00:01<00:01, 11.47it/s] 56%|█████▋    | 18/32 [00:01<00:01, 11.49it/s] 62%|██████▎   | 20/32 [00:01<00:01, 11.51it/s] 69%|██████▉   | 22/32 [00:01<00:00, 11.44it/s] 75%|███████▌  | 24/32 [00:02<00:00, 11.44it/s] 81%|████████▏ | 26/32 [00:02<00:00, 11.52it/s] 88%|████████▊ | 28/32 [00:02<00:00, 11.69it/s] 94%|█████████▍| 30/32 [00:02<00:00, 11.79it/s]100%|██████████| 32/32 [00:02<00:00, 11.78it/s]100%|██████████| 32/32 [00:02<00:00, 11.60it/s]
+warmup start
+warmup done
+[tvm] avg 412.7345 ms, min 410.6863 ms, max 414.6295 ms (50 runs, 50 warmups, profiled)

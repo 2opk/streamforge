@@ -1,0 +1,14 @@
+model='snapkv' system='dynamo' seqlen=4096 layer_num=None
+input_names=['q', 'k', 'v']
+output_names=['out', 'snapkv_score']
+weight_zoo_path='/home/ppopp25_ae/ppopp25_ae/weight_zoo.json'
+hf_config.num_hidden_layers=32
+data_path='/home/ppopp25_ae/ppopp25_ae/vcsum.jsonl'
+token_ids.shape=torch.Size([1, 4096])
+token_ids.grad=None
+using safe tensor: files={'model-00002-of-00002.safetensors', 'model-00001-of-00002.safetensors'}
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 70.44it/s]
+  0%|          | 0/32 [00:00<?, ?it/s]  6%|▋         | 2/32 [00:00<00:02, 13.47it/s] 12%|█▎        | 4/32 [00:00<00:01, 14.91it/s] 19%|█▉        | 6/32 [00:00<00:01, 15.09it/s] 25%|██▌       | 8/32 [00:00<00:01, 14.79it/s] 31%|███▏      | 10/32 [00:00<00:01, 14.76it/s] 38%|███▊      | 12/32 [00:00<00:01, 14.67it/s] 44%|████▍     | 14/32 [00:00<00:01, 13.52it/s] 50%|█████     | 16/32 [00:01<00:01, 13.48it/s] 56%|█████▋    | 18/32 [00:01<00:01, 12.78it/s] 62%|██████▎   | 20/32 [00:01<00:00, 12.99it/s] 69%|██████▉   | 22/32 [00:01<00:00, 13.08it/s] 75%|███████▌  | 24/32 [00:01<00:00, 13.34it/s] 81%|████████▏ | 26/32 [00:01<00:00, 13.47it/s] 88%|████████▊ | 28/32 [00:02<00:00, 13.64it/s] 94%|█████████▍| 30/32 [00:02<00:00, 13.54it/s]100%|██████████| 32/32 [00:02<00:00, 13.54it/s]100%|██████████| 32/32 [00:02<00:00, 13.68it/s]
+warmup start
+warmup done
+[dynamo] avg 494.7832 ms, min 490.1216 ms, max 500.0608 ms (50 runs, 50 warmups, profiled)

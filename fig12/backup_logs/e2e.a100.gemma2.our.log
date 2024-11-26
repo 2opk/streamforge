@@ -1,0 +1,372 @@
+model='gemma2' system='our' seqlen=4096 layer_num=None
+input_names=['q', 'k', 'v']
+output_names=['out']
+graph main_graph (
+  %q[FLOAT16, 1x4096x32x128]
+  %k[FLOAT16, 1x4096x32x128]
+  %v[FLOAT16, 1x4096x32x128]
+) {
+  %/Constant_output_0 = Constant[value = <Tensor>]()
+  %/Constant_1_output_0 = Constant[value = <Scalar Tensor []>]()
+  %/Trilu_output_0 = Trilu[upper = 1](%/Constant_output_0, %/Constant_1_output_0)
+  %/Transpose_output_0 = Transpose[perm = [0, 2, 1, 3]](%q)
+  %/Transpose_1_output_0 = Transpose[perm = [0, 2, 1, 3]](%v)
+  %/Transpose_2_output_0 = Transpose[perm = [0, 2, 3, 1]](%k)
+  %/MatMul_output_0 = MatMul(%/Transpose_output_0, %/Transpose_2_output_0)
+  %/Constant_2_output_0 = Constant[value = <Scalar Tensor []>]()
+  %/Div_output_0 = Div(%/MatMul_output_0, %/Constant_2_output_0)
+  %/Constant_3_output_0 = Constant[value = <Scalar Tensor []>]()
+  %/Div_1_output_0 = Div(%/Div_output_0, %/Constant_3_output_0)
+  %/Tanh_output_0 = Tanh(%/Div_1_output_0)
+  %/Constant_4_output_0 = Constant[value = <Scalar Tensor []>]()
+  %/Mul_output_0 = Mul(%/Tanh_output_0, %/Constant_4_output_0)
+  %/Add_output_0 = Add(%/Mul_output_0, %/Trilu_output_0)
+  %/Cast_output_0 = Cast[to = 1](%/Add_output_0)
+  %/Softmax_output_0 = Softmax[axis = -1](%/Cast_output_0)
+  %/Cast_1_output_0 = Cast[to = 10](%/Softmax_output_0)
+  %/MatMul_1_output_0 = MatMul(%/Cast_1_output_0, %/Transpose_1_output_0)
+  %/Transpose_3_output_0 = Transpose[perm = [0, 2, 1, 3]](%/MatMul_1_output_0)
+  %/Constant_5_output_0 = Constant[value = <Tensor>]()
+  %out = Reshape[allowzero = 0](%/Transpose_3_output_0, %/Constant_5_output_0)
+  return %out
+}
+/home/ppopp25_ae/ppopp25_ae/3rd/asuka/python/asuka/translate.py:217: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at ../torch/csrc/utils/tensor_numpy.cpp:206.)
+  operand_torch = torch.from_numpy(operand)
+module {
+  func.func @Gemma2(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>) -> tensor<1x4096x32x128xf16> {
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg2, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %cst = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %5 = asuka.div %4, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %cst_0 = arith.constant dense<5.000000e+01> : tensor<1xf16>
+    %6 = asuka.div %5, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.tanh %6 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %cst_1 = arith.constant dense<5.000000e+01> : tensor<1xf16>
+    %8 = asuka.mul %7, %cst_1 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %9 = asuka.add %8, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %10 = asuka.convert %9, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.softmax %10, dim = -1 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %12 = asuka.convert %11, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %13 = asuka.dot %12, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %14 = asuka.permute %13, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    %15 = asuka.reshape %14 : (tensor<1x4096x32x128xf16>) -> tensor<1x4096x32x128xf16>
+    return %15 : tensor<1x4096x32x128xf16>
+  }
+}
+idx=0 arith.constant
+idx=1 arith.constant
+idx=2 asuka.trilu
+idx=3 asuka.permute
+idx=4 asuka.permute
+idx=5 asuka.permute
+idx=6 asuka.dot
+idx=7 asuka.div
+idx=8 asuka.div
+idx=9 asuka.tanh
+idx=10 asuka.mul
+idx=11 asuka.add
+idx=12 asuka.convert
+idx=13 asuka.exp
+idx=14 asuka.reduce
+idx=15 asuka.div
+idx=16 asuka.convert
+idx=17 asuka.dot
+idx=18 asuka.permute
+len(connected_partitions)=1370
+pruning bad partition(provide_output=False):   0%|          | 0/1370 [00:00<?, ?it/s]pruning bad partition(provide_output=False):  13%|█▎        | 180/1370 [00:00<00:00, 1787.71it/s]pruning bad partition(provide_output=False):  26%|██▋       | 360/1370 [00:00<00:00, 1791.99it/s]pruning bad partition(provide_output=False):  40%|████      | 552/1370 [00:00<00:00, 1847.70it/s]pruning bad partition(provide_output=False):  54%|█████▍    | 737/1370 [00:00<00:00, 1821.24it/s]pruning bad partition(provide_output=False):  68%|██████▊   | 931/1370 [00:00<00:00, 1863.38it/s]pruning bad partition(provide_output=False):  82%|████████▏ | 1120/1370 [00:00<00:00, 1870.97it/s]pruning bad partition(provide_output=False):  96%|█████████▌| 1312/1370 [00:00<00:00, 1882.76it/s]pruning bad partition(provide_output=False): 100%|██████████| 1370/1370 [00:00<00:00, 1859.72it/s]
+after pruning bad partition: len(connected_partitions)=139
+after pruning bad para partition: len(connected_partitions)=127
+pruning bad para partition:   0%|          | 0/139 [00:00<?, ?it/s]pruning bad para partition:  36%|███▌      | 50/139 [00:00<00:00, 494.90it/s]pruning bad para partition:  76%|███████▋  | 106/139 [00:00<00:00, 529.85it/s]pruning bad para partition: 100%|██████████| 139/139 [00:00<00:00, 528.77it/s]
+max_metric:  536870912.0
+tall_and_thin tensors: 7
+expand and pruning bad ai partition:   0%|          | 0/127 [00:00<?, ?it/s]expand and pruning bad ai partition:   9%|▊         | 11/127 [00:00<00:01, 82.42it/s]expand and pruning bad ai partition:  20%|█▉        | 25/127 [00:01<00:08, 12.28it/s]expand and pruning bad ai partition:  23%|██▎       | 29/127 [00:02<00:08, 11.92it/s]expand and pruning bad ai partition:  25%|██▌       | 32/127 [00:05<00:24,  3.89it/s]expand and pruning bad ai partition:  28%|██▊       | 35/127 [00:05<00:22,  4.04it/s]expand and pruning bad ai partition:  36%|███▌      | 46/127 [00:06<00:10,  8.04it/s]expand and pruning bad ai partition:  54%|█████▍    | 69/127 [00:06<00:03, 18.39it/s]expand and pruning bad ai partition:  60%|█████▉    | 76/127 [00:06<00:02, 21.18it/s]expand and pruning bad ai partition:  81%|████████  | 103/127 [00:06<00:00, 41.39it/s]expand and pruning bad ai partition:  91%|█████████ | 115/127 [00:06<00:00, 41.52it/s]expand and pruning bad ai partition: 100%|██████████| 127/127 [00:06<00:00, 18.57it/s]
+after expand and pruning bad ai partition: len(connected_partitions)=16
+after pruning bad partition(provide_output=True): len(connected_partitions)=4
+pruning bad partition(provide_output=True):   0%|          | 0/16 [00:00<?, ?it/s]pruning bad partition(provide_output=True): 100%|██████████| 16/16 [00:00<00:00, 1711.96it/s]
+module {
+  func.func @Gemma2(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>) -> tensor<1x4096x32x128xf16> {
+    %cst = arith.constant dense<5.000000e+01> : tensor<1xf16>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg2, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.div %5, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.tanh %6 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %8 = asuka.mul %7, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %9 = asuka.add %8, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %10 = asuka.convert %9, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.exp %10 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %12 = asuka.reduce(%11), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %13 = asuka.div %11, %12 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %14 = asuka.convert %13, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %15 = asuka.dot %14, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %16 = asuka.permute %15, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    return %16 : tensor<1x4096x32x128xf16>
+  }
+  asuka.kernel @Gemma2_p0(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>, %arg3: tensor<1x32x4096x1xf32>) -> tensor<1x4096x32x128xf16> {
+    %cst = arith.constant dense<5.000000e+01> : tensor<1xf16>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg2, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.div %5, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.tanh %6 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %8 = asuka.mul %7, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %9 = asuka.add %8, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %10 = asuka.convert %9, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.exp %10 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %12 = asuka.div %11, %arg3 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %13 = asuka.convert %12, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %14 = asuka.dot %13, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %15 = asuka.permute %14, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    asuka.return %15 : tensor<1x4096x32x128xf16>
+  }
+  asuka.kernel @Gemma2_p1(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x1xf32> {
+    %cst = arith.constant dense<5.000000e+01> : tensor<1xf16>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %3 = asuka.dot %1, %2 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %4 = asuka.div %3, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.tanh %5 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.mul %6, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %8 = asuka.add %7, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %9 = asuka.convert %8, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %10 = asuka.exp %9 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.reduce(%10), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    asuka.return %11 : tensor<1x32x4096x1xf32>
+  }
+  asuka.kernel @Gemma2_p2(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>) -> tensor<1x4096x32x128xf16> {
+    %cst = arith.constant dense<5.000000e+01> : tensor<1xf16>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg2, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.div %5, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.tanh %6 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %8 = asuka.mul %7, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %9 = asuka.add %8, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %10 = asuka.convert %9, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.exp %10 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %12 = asuka.reduce(%11), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %13 = asuka.div %11, %12 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %14 = asuka.convert %13, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %15 = asuka.dot %14, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %16 = asuka.permute %15, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    asuka.return %16 : tensor<1x4096x32x128xf16>
+  }
+  asuka.kernel @Gemma2_p3(%arg0: tensor<1x4096x32x128xf16>, %arg1: tensor<1x4096x32x128xf16>, %arg2: tensor<1x4096x32x128xf16>) -> (tensor<1x32x4096x1xf32>, tensor<1x4096x32x128xf16>) {
+    %cst = arith.constant dense<5.000000e+01> : tensor<1xf16>
+    %cst_0 = arith.constant dense<1.131250e+01> : tensor<1xf16>
+    %0 = asuka.trilu diagonal = 1, is_upper = true, shape = [4096, 4096], val = 0xFC00 : f16
+    %1 = asuka.permute %arg0, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %2 = asuka.permute %arg1, dims = [0, 2, 1, 3] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x4096x128xf16>
+    %3 = asuka.permute %arg2, dims = [0, 2, 3, 1] : (tensor<1x4096x32x128xf16>) -> tensor<1x32x128x4096xf16>
+    %4 = asuka.dot %1, %3 : (tensor<1x32x4096x128xf16>, tensor<1x32x128x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %5 = asuka.div %4, %cst_0 : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %6 = asuka.div %5, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %7 = asuka.tanh %6 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %8 = asuka.mul %7, %cst : (tensor<1x32x4096x4096xf16>, tensor<1xf16>) -> tensor<1x32x4096x4096xf16>
+    %9 = asuka.add %8, %0 : (tensor<1x32x4096x4096xf16>, tensor<4096x4096xf16>) -> tensor<1x32x4096x4096xf16>
+    %10 = asuka.convert %9, type = f32 : (tensor<1x32x4096x4096xf16>) -> tensor<1x32x4096x4096xf32>
+    %11 = asuka.exp %10 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf32>
+    %12 = asuka.reduce(%11), dim = -1, op =  ADD, keep_dim = true : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x1xf32>
+    %13 = asuka.div %11, %12 : (tensor<1x32x4096x4096xf32>, tensor<1x32x4096x1xf32>) -> tensor<1x32x4096x4096xf32>
+    %14 = asuka.convert %13, type = f16 : (tensor<1x32x4096x4096xf32>) -> tensor<1x32x4096x4096xf16>
+    %15 = asuka.dot %14, %2 : (tensor<1x32x4096x4096xf16>, tensor<1x32x4096x128xf16>) -> tensor<1x32x4096x128xf16>
+    %16 = asuka.permute %15, dims = [0, 2, 1, 3] : (tensor<1x32x4096x128xf16>) -> tensor<1x4096x32x128xf16>
+    asuka.return %12, %16 : tensor<1x32x4096x1xf32>, tensor<1x4096x32x128xf16>
+  }
+}
+optimize Gemma2_p0
+optimize Gemma2_p1
+optimize Gemma2_p2
+optimize Gemma2_p3
+tuning time: 9.292726516723633 sec
+Skip op: func.func
+path: /tmp/tmpce2_qbrl.py
+profiling...
+out_str='[Gemma2_p0] avg_ms: 1.0650917291641235\n[Gemma2_p1] avg_ms: 0.711203932762146\n[Gemma2_p2] avg_ms: 0.9949231743812561\n[Gemma2_p3] avg_ms: 0.9884456992149353\n'
+[Gemma2_p0] avg_ms: 1.0650917291641235
+[Gemma2_p1] avg_ms: 0.711203932762146
+[Gemma2_p2] avg_ms: 0.9949231743812561
+[Gemma2_p3] avg_ms: 0.9884456992149353
+best_kernel:
+
+Gemma2_p3
+best_time=0.9884456992149353
+import math
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import triton
+import triton.language as tl
+from typing import Callable, Any, Optional, Tuple
+
+def bench_Gemma2_p3():
+  dev = torch.cuda.current_device()
+  rand_arg_0 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  rand_arg_1 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  rand_arg_2 = torch.randn(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  avg_ms = triton.testing.do_bench(lambda: Gemma2_p3(rand_arg_0, rand_arg_1, rand_arg_2))
+  print('[Gemma2_p3] avg_ms:', avg_ms)
+
+def Gemma2_p3(arg0: torch.Tensor, arg1: torch.Tensor, arg2: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+  dev = arg0.device
+  autotune_key = torch.cuda.get_device_capability(dev)[0]
+  tensor_0 = arg0
+  tensor_1 = arg1
+  tensor_2 = arg2
+  empty_ptr_3 = torch.empty(1, 32, 4096, 1, dtype=torch.float32, device=dev)
+  empty_ptr_4 = torch.empty(1, 4096, 32, 128, dtype=torch.float16, device=dev)
+  grid = (1, 32, 32)
+  Gemma2_p3_kernel[grid](tensor_0, tensor_1, tensor_2, empty_ptr_3, empty_ptr_4, autotune_key)
+  tensor_5 = empty_ptr_3
+  tensor_6 = empty_ptr_4
+  return tensor_5, tensor_6
+
+@triton.autotune(configs=[
+  triton.Config({}, num_warps=4),
+  triton.Config({}, num_warps=8),
+], key=['autotune_key'])
+@triton.jit
+def Gemma2_p3_kernel(
+  arg_0,
+  arg_1,
+  arg_2,
+  arg_3,
+  arg_4,
+  autotune_key,
+):
+  pid_5 = tl.program_id(0)
+  pid_6 = tl.program_id(1)
+  pid_7 = tl.program_id(2)
+  const_8 = 1.131250e+01
+  const_9 = 5.000000e+01
+  const_10 = 1.442695e+00
+  const_11 = float('-inf')
+  const_12 = 0.000000e+00
+  const_13 = 0
+  const_14 = 1
+  const_15 = 4096
+  const_16 = 128
+  mul_17 = pid_6 * const_16
+  mul_18 = mul_17 * const_15
+  mul_19 = pid_7 * const_16
+  add_20 = mul_18 + mul_19
+  block_ptr_21 = tl.make_block_ptr(
+    base=arg_0 + add_20,
+    shape=(128, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  block_load_22 = tl.load(block_ptr_21)
+  mul_23 = pid_7 * const_15
+  add_24 = mul_17 + mul_23
+  block_ptr_25 = tl.make_block_ptr(
+    base=arg_3 + add_24,
+    shape=(128, 1,),
+    strides=(1, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 1,),
+    order=(1, 0,),
+  )
+  block_ptr_26 = tl.make_block_ptr(
+    base=arg_4 + add_20,
+    shape=(128, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  converted_27 = const_8
+  div_28 = block_load_22 / converted_27
+  div_28 = div_28.to(tl.float16)
+  converted_29 = const_9
+  div_30 = div_28 / converted_29
+  div_30 = div_30.to(tl.float16)
+  zero_31 = tl.zeros([128, 128], dtype=tl.float32)
+  zero_32 = tl.zeros([128, 1], dtype=tl.float32)
+  add_33 = mul_17 + const_16
+  block_ptr_34 = tl.make_block_ptr(
+    base=arg_2 + mul_19,
+    shape=(128, 4096,),
+    strides=(1, 4096,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(0, 1,),
+  )
+  block_ptr_35 = tl.make_block_ptr(
+    base=arg_1 + mul_19,
+    shape=(4096, 128,),
+    strides=(4096, 1,),
+    offsets=(0, 0,),
+    block_shape=(128, 128,),
+    order=(1, 0,),
+  )
+  for i_36 in range(const_13, add_33, const_16):
+    block_load_37 = tl.load(block_ptr_34)
+    block_load_38 = tl.load(block_ptr_35)
+    dot_39 = tl.dot(div_30, block_load_37)
+    where_40 = tl.zeros([128, 128], dtype=tl.float32)
+    where_40 = tl.where(mul_17 + tl.arange(0, 128)[:, None] >= i_36 + tl.arange(0, 128)[None, :], where_40, float('-inf'))
+    tanh_41 = tl.inline_asm_elementwise(
+      asm='tanh.approx.f32 $0, $1;',
+      constraints=('=r,r'),
+      args=[dot_39],
+      dtype=(tl.float32,),
+      is_pure=True,
+      pack=1,
+    )
+    mul_42 = tanh_41 * const_9
+    mul_43 = mul_42 * const_10
+    add_44 = mul_43 + where_40
+    exp2_45 = tl.math.exp2(add_44)
+    reduce_sum_46 = tl.sum(exp2_45, axis=1, keep_dims=True).to(tl.float32)
+    reduce_sum_46 += zero_32
+    converted_47 = exp2_45.to(tl.float16)
+    dot_48 = tl.dot(converted_47, block_load_38)
+    add_49 = zero_31 + dot_48
+    block_advance_50 = tl.advance(block_ptr_34, (0, 128,))
+    block_advance_51 = tl.advance(block_ptr_35, (128, 0,))
+    block_ptr_34 = block_advance_50
+    block_ptr_35 = block_advance_51
+    zero_31 = add_49
+    zero_32 = reduce_sum_46
+  div_52 = zero_31 / zero_32
+  converted_53 = div_52.to(tl.float16)
+  block_store_54 = tl.store(block_ptr_25, zero_32)
+  block_store_55 = tl.store(block_ptr_26, converted_53)
+
+def Gemma2(arg_0, arg_1, arg_2):
+  k0_out_0, k0_out_1 = Gemma2_p3(arg_0, arg_2, arg_1)
+  return k0_out_1
+
+write code to /tmp/tmpt4k9_8u1.py
+weight_zoo_path='/home/ppopp25_ae/ppopp25_ae/weight_zoo.json'
+hf_config.num_hidden_layers=32
+data_path='/home/ppopp25_ae/ppopp25_ae/vcsum.jsonl'
+token_ids.shape=torch.Size([1, 4096])
+token_ids.grad=None
+using safe tensor: files={'model-00001-of-00002.safetensors', 'model-00002-of-00002.safetensors'}
+  0%|          | 0/2 [00:00<?, ?it/s]100%|██████████| 2/2 [00:00<00:00, 106.07it/s]
+  0%|          | 0/32 [00:00<?, ?it/s]  3%|▎         | 1/32 [00:00<00:03,  8.27it/s]  6%|▋         | 2/32 [00:00<00:03,  8.55it/s]  9%|▉         | 3/32 [00:00<00:03,  8.63it/s] 12%|█▎        | 4/32 [00:00<00:03,  8.49it/s] 16%|█▌        | 5/32 [00:00<00:03,  8.45it/s] 19%|█▉        | 6/32 [00:00<00:03,  8.44it/s] 22%|██▏       | 7/32 [00:00<00:02,  8.60it/s] 25%|██▌       | 8/32 [00:00<00:02,  8.88it/s] 28%|██▊       | 9/32 [00:01<00:02,  8.31it/s] 31%|███▏      | 10/32 [00:01<00:02,  8.06it/s] 34%|███▍      | 11/32 [00:01<00:02,  8.03it/s] 38%|███▊      | 12/32 [00:01<00:02,  8.03it/s] 41%|████      | 13/32 [00:01<00:02,  7.92it/s] 44%|████▍     | 14/32 [00:01<00:02,  7.79it/s] 47%|████▋     | 15/32 [00:01<00:02,  7.72it/s] 50%|█████     | 16/32 [00:01<00:02,  7.68it/s] 53%|█████▎    | 17/32 [00:02<00:01,  7.79it/s] 56%|█████▋    | 18/32 [00:02<00:01,  7.68it/s] 59%|█████▉    | 19/32 [00:02<00:01,  7.41it/s] 62%|██████▎   | 20/32 [00:02<00:01,  7.29it/s] 66%|██████▌   | 21/32 [00:02<00:01,  7.20it/s] 69%|██████▉   | 22/32 [00:02<00:01,  7.14it/s] 72%|███████▏  | 23/32 [00:02<00:01,  6.99it/s] 75%|███████▌  | 24/32 [00:03<00:01,  6.84it/s] 78%|███████▊  | 25/32 [00:03<00:01,  6.67it/s] 81%|████████▏ | 26/32 [00:03<00:00,  6.37it/s] 84%|████████▍ | 27/32 [00:03<00:00,  6.10it/s] 88%|████████▊ | 28/32 [00:03<00:00,  5.88it/s] 91%|█████████ | 29/32 [00:03<00:00,  5.71it/s] 94%|█████████▍| 30/32 [00:04<00:00,  5.49it/s] 97%|█████████▋| 31/32 [00:04<00:00,  5.46it/s]100%|██████████| 32/32 [00:04<00:00,  5.54it/s]100%|██████████| 32/32 [00:04<00:00,  7.03it/s]
+warmup start
+warmup done
+[our] avg 288.2635 ms, min 285.4321 ms, max 290.6957 ms (50 runs, 50 warmups, profiled)

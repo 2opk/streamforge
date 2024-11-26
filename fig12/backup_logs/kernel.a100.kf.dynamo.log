@@ -1,0 +1,14 @@
+model='kf' system='dynamo' seqlen=4096
+input_names=['q', 'k', 'v', 'exp_rand']
+output_names=['out', 'kf_score']
+check=True
+start_peak_mem_mib=2144.0
+end_peak_mem_mib=4445.265625
+gflops=137.438953472
+mib=4445.265625
+checking dynamo...
+out loss: {'abs_max': 0.001953125, 'abs_mean': 1.9609440339962703e-05, 'rel_max': inf, 'rel_mean': inf, 'nz_rel_max': 765.0, 'nz_rel_mean': 0.0045041028919399154, 'mse': 1.3134740536545134e-09, 'rmse': 3.624188258982297e-05}
+kf_score loss: {'abs_max': 0.00029850006103515625, 'abs_mean': 5.465639812504697e-06, 'rel_max': 0.0004653272198784749, 'rel_mean': 7.3184662969759565e-06, 'nz_rel_max': 0.0004653272198784749, 'nz_rel_mean': 7.3184662969759565e-06, 'mse': 1.2058562579138514e-10, 'rmse': 1.0981148655372312e-05}
+warmup start
+warmup done
+[dynamo] avg 10.3803 ms, min 10.2406 ms, max 10.5405 ms, 13240.313753716233 gflops/s (10 runs, 100 warmups, profiled)
