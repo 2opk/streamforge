@@ -25,6 +25,8 @@ We have provided a ssh private key for AE reviewers, named `id_rsa_ppopp25_ae`, 
 ssh -p 40422 -i ./id_rsa_ppopp25_ae ppopp25_ae@166.111.68.163
 ```
 
+The logged cluster is named `yes`, where there are 8xA100 scheduled by slurm. By `ssh fuse0`, we can log into another cluster named `fuse0`, where there are 3xH100 also scheduled by slurm.
+
 ### Use tmux for Long-Running Scripts
 
 We strongly recommend running all scripts inside [tmux](https://github.com/tmux/tmux/wiki/Getting-Started) to prevent interruptions.
@@ -75,14 +77,14 @@ cd ..
 
 Generated PDFs (`fig12_e2e.pdf`, `fig12_kernel.pdf`, `fig13.pdf` and `fig14.pdf`) will be saved in their respective directories. Use `scp` to download them locally.
 
-### In-depth Reproduction: Plot from Real Run (~20 hours)
+### In-depth Reproduction: Plot from Real Run (~23 hours)
 
 ```bash
 cd ~/ppopp25_ae
 
 # for Figure 12
 cd ./fig12
-# run on A100 machine (~3.5 hours, logs will be saved in ./ae_logs)
+# run on A100 machine (~6.5 hours, logs will be saved in ./ae_logs)
 ./run.sh
 # log into H100 machine
 ssh fuse0
@@ -130,6 +132,31 @@ cd ..
 ```
 
 Generated PDFs (`fig12_e2e.pdf`, `fig12_kernel.pdf`, `fig13.pdf` and `fig14.pdf`) will be saved in their respective directories. Use `scp` to download them locally.
+
+#### Potential Issues and Solutions
+
+1. Long-running slurm tasks for TVM (Figure 12 on A100 Cluster).
+
+  Due to internal problems, some TVM autotuner tasks may exceed 3.5 hours. To solve the problem, we should first use `scancel` to scancel the slurm task, and then use `run_single.sh` to rerun TVM case:
+  ```bash
+  # find which case we should rerun
+  ps -aux | grep srun | grep ppopp25_ae
+  # see the current task id
+  squeue
+  # cancel the task to make the `run.sh` continue
+  scancel <task_id>
+  # rerun the specific TVM case using `run_single.sh`
+  ./run_single.sh kernel roco tvm
+  ```
+
+2. Warning occurs in `./plot.sh`.
+
+  Warnings like `Warning: ./ae_logs/kernel.100.roco.tvm.log does not have avg time` indicates missing logs. To solve the problem, we should also use `run_single.sh` to run specific TVM case. For example:
+  ```bash
+  ./run_single.sh kernel roco tvm
+  ```
+
+For AE Reviewers: If you encounter any issues, feel free to contact use directly through HotCRP comments.
 
 ## Installation
 
