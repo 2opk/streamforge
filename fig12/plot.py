@@ -45,7 +45,8 @@ def extract(log_dir):
           avg_time = float(avg_match.group('avg_time'))
           data[exp][device][sys][model] = avg_time
         else:
-          print(f"Warning: {fp} does not have avg time")
+          if not (sys == 'tvm' and model == 'corm'):
+            print(f"Warning: {fp} does not have avg time")
   
   e2e_a100_df = pd.DataFrame(data['e2e']['a100'])
   e2e_h100_df = pd.DataFrame(data['e2e']['h100'])
