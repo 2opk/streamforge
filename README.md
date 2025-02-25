@@ -9,7 +9,7 @@ This artifact supports the reproduction of results presented in paper #80 at PPo
 The repository includes:
 * Backup logs in `fig12/backup_logs`, `fig13/backup_logs` and `fig14/backup_logs`. These files were used to generate Figure 12, Figure 13 and Figure 14 in the paper.
 * Reproduction Scripts in `fig12/`, `fig13/` and `fig14/`. These scripts were used for a in-depth reproduction by executing baselines and our work.
-* Source code in `3rd/` and `asuka_exp`. `3rd/asuka` is our work named `TA` in paper. `3rd/tvm` includes the [TVM](https://github.com/apache/tvm) baseline (commit `64969035fd4f3c1ddcc23caa84567bf90e33889c`). `asuka_exp` provides additional baselines, including PyTorch, Inductor and TensorRT.
+* Source code in `3rd/` and `asuka_exp`. `3rd/asuka` is our work named `FlashTensor` in paper. `3rd/tvm` includes the [TVM](https://github.com/apache/tvm) baseline (commit `64969035fd4f3c1ddcc23caa84567bf90e33889c`). `asuka_exp` provides additional baselines, including PyTorch, Inductor and TensorRT.
 
 ### About Missing Baseline in the Artifact
 
@@ -167,7 +167,7 @@ For AE Reviewers: We strongly recommend using the provided environment because s
 
 # backup existing environement (Note that Python Venv contains absolute paths, making backups non-functional directly after moving)
 mv ~/ppopp25_ae ~/ppopp25_ae_backup
-git clone https://github.com/monellz/TA-AE.git ppopp25_ae
+git clone https://github.com/monellz/FlashTensor-AE.git ppopp25_ae
 
 # install on A100 machine
 cd ~/ppopp25_ae
@@ -176,7 +176,7 @@ cd ~/ppopp25_ae
 # install on H100 machine
 ssh fuse0
 mv ~/ppopp25_ae ~/ppopp25_ae_backup
-git clone https://github.com/monellz/TA-AE.git ppopp25_ae
+git clone https://github.com/monellz/FlashTensor-AE.git ppopp25_ae
 
 cd ~/ppopp25_ae
 ./script/install.sh
