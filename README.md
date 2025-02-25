@@ -4,7 +4,7 @@
 
 ## Abstract
 
-This artifact supports the reproduction of results presented in paper #80 at PPoPP'25, titled TA: A Tensor Property-Aware Optimization System for Long-Context DNN Programs, including Figure 12, Figure 13 and Figure 14.
+This artifact supports the reproduction of results presented in paper #80 at PPoPP'25, titled FlashTensor: Optimizing Tensor Programs by Leveraging Fine-grained Tensor Property, including Figure 12, Figure 13 and Figure 14.
 
 The repository includes:
 * Backup logs in `fig12/backup_logs`, `fig13/backup_logs` and `fig14/backup_logs`. These files were used to generate Figure 12, Figure 13 and Figure 14 in the paper.
