@@ -1,4 +1,4 @@
-# TA AE
+# FlashTensor AE
 
 [![DOI](https://zenodo.org/badge/893756798.svg)](https://zenodo.org/badge/latestdoi/893756798)
 
