@@ -37,7 +37,13 @@ if [ -n "$1" ]; then
     -DSTABLEHLO_ENABLE_BINDINGS_PYTHON=OFF \
     -DTRITON_BUILD_PYTHON_MODULE=OFF \
     -DTRITON_CODEGEN_BACKENDS="nvidia;amd" \
-    -DMLIR_DIR=${MLIR_DIR}
+    -DLLVM_DIR=/root/llvm-project/build/lib/cmake/llvm \
+    -DMLIR_DIR=/root/llvm-project/build/lib/cmake/mlir \
+    -DMLIR_CMAKE_DIR=/root/llvm-project/build/lib/cmake/mlir \
+    -DLLVM_CMAKE_DIR=/root/llvm-project/build/lib/cmake/llvm \
+    -DLLVM_INCLUDE_DIRS=/root/llvm-project/llvm/include \
+    -DMLIR_INCLUDE_DIRS=/root/llvm-project/mlir/include \
+    -DLLVM_BUILD_LIBRARY_DIR=/root/llvm-project/build/lib \
 else
   cd ${BUILD}
 fi

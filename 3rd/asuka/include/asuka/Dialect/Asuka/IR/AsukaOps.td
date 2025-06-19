@@ -276,7 +276,7 @@ def PreciseDotOp: Asuka_Op<"precise_dot_op", [Pure, InferTypeOpAdaptor]> {
 }
 
 def AvgPoolOp: Asuka_Op<"avg_pool", [Pure, SameOperandsAndResultElementType, InferTypeOpAdaptor]> {
-  let summary = "asuka avgpool";  
+  let summary = "asuka avgpool";
   let description = [{}];
   let arguments = (ins
     AS_AnyTensor:$operand,
@@ -336,7 +336,7 @@ def ReduceOp: Asuka_Op<"reduce", [Pure, SameOperandsAndResultElementType, InferT
   }];
 
   let arguments = (ins
-    AS_AnyTensor:$operand, 
+    AS_AnyTensor:$operand,
     Optional<AS_AnyTensor>:$init,
     I64Attr:$reduce_dimension,
     Asuka_ReduceTypeAttr:$reduce_type,
@@ -536,7 +536,7 @@ def TriluOp: Asuka_Op<"trilu", [Pure, ConstantLike, InferTypeOpAdaptor]> {
 
 // FIXME: it should be Pure and ConstantLike (maybe we need a pass to explicitly replicate its use or make another zero_op in asuka::triton that is not pure)
 def ZeroOp: Asuka_Op<"zero", [InferTypeOpAdaptor]> {
-  let summary = "";  
+  let summary = "";
   let description = [{}];
   let arguments = (ins
     DenseI64ArrayAttr:$shape,
@@ -565,7 +565,7 @@ def MaskOp: Asuka_Op<"mask", [Pure, SingleBlockImplicitTerminator<"asuka::MaskYi
 
   let extraClassDeclaration = [{
     Value getStart(int i) {
-      return getOperation()->getOperand(i);      
+      return getOperation()->getOperand(i);
     }
     Value getIterArgInEntry(int i) {
       auto entry = &getRegion().front();
@@ -611,7 +611,7 @@ def KernelOp: Asuka_Op<"kernel", [
   let regions = (region AnyRegion:$body);
 
   let builders = [OpBuilder<(ins
-    "StringRef":$name, "FunctionType":$type, 
+    "StringRef":$name, "FunctionType":$type,
     CArg<"ArrayRef<NamedAttribute>", "{}">:$attrs,
     CArg<"ArrayRef<DictionaryAttr>", "{}">:$arg_attrs
   )>];
@@ -645,7 +645,7 @@ def KernelOp: Asuka_Op<"kernel", [
         llvm::errs() << ")\n";
       }
     };
-    
+
     llvm::SmallVector<ParallelMap> getParallelMaps() {
       llvm::SmallVector<ParallelMap> maps;
       if (!hasParallelMap()) return maps;
@@ -876,7 +876,7 @@ def DynamicBlockForOp : Asuka_Op<"dynamic_block_for", [AttrSizedOperandSegments,
     }
     Value getInitArg(int i) {
       assert(i >= 0);
-      assert(i < getNumInitArgs()); 
+      assert(i < getNumInitArgs());
       int block_arg_num = getNumBlockArgs();
       return getOperation()->getOperand(2 + block_arg_num + i);
     }
@@ -925,7 +925,7 @@ def DynamicBlockForOp : Asuka_Op<"dynamic_block_for", [AttrSizedOperandSegments,
       entry->addArgument(IndexType::get(context), locs[0]);
       int block_size = getStepAttr().getInt();
       for (int i = 0; i < block_arg_num; ++i) {
-        auto arg = getBlockArg(i); 
+        auto arg = getBlockArg(i);
         auto dim = getBlockDim(i);
         auto arg_type = cast<RankedTensorType>(arg.getType());
         auto shape = arg_type.getShape();
@@ -937,13 +937,13 @@ def DynamicBlockForOp : Asuka_Op<"dynamic_block_for", [AttrSizedOperandSegments,
         entry->addArgument(RankedTensorType::get(tiled_shape, arg_type.getElementType()), locs[1 + i]);
       }
       for (int i = 0; i < init_arg_num; ++i) {
-        auto arg = getInitArg(i); 
+        auto arg = getInitArg(i);
         entry->addArgument(arg.getType(), locs[1 + block_arg_num + i]);
       }
 
       return entry;
     }
-    
+
   }];
 
   let builders = [
@@ -998,7 +998,7 @@ def BlockForOp : Asuka_Op<"block_for", [AttrSizedOperandSegments, Pure, Automati
     }
     Value getInitArg(int i) {
       assert(i >= 0);
-      assert(i < getNumInitArgs()); 
+      assert(i < getNumInitArgs());
       int block_arg_num = getNumBlockArgs();
       return getOperation()->getOperand(block_arg_num + i);
     }
@@ -1047,7 +1047,7 @@ def BlockForOp : Asuka_Op<"block_for", [AttrSizedOperandSegments, Pure, Automati
       entry->addArgument(IndexType::get(context), locs[0]);
       int block_size = getStepAttr().getInt();
       for (int i = 0; i < block_arg_num; ++i) {
-        auto arg = getBlockArg(i); 
+        auto arg = getBlockArg(i);
         auto dim = getBlockDim(i);
         auto arg_type = cast<RankedTensorType>(arg.getType());
         auto shape = arg_type.getShape();
@@ -1059,13 +1059,13 @@ def BlockForOp : Asuka_Op<"block_for", [AttrSizedOperandSegments, Pure, Automati
         entry->addArgument(RankedTensorType::get(tiled_shape, arg_type.getElementType()), locs[1 + i]);
       }
       for (int i = 0; i < init_arg_num; ++i) {
-        auto arg = getInitArg(i); 
+        auto arg = getInitArg(i);
         entry->addArgument(arg.getType(), locs[1 + block_arg_num + i]);
       }
 
       return entry;
     }
-    
+
   }];
 
   let builders = [
@@ -1110,7 +1110,7 @@ def BlockYieldOp : Asuka_Op<"block_yield", [AttrSizedOperandSegments, Pure, Retu
     int64_t getNumIters() {
       auto sizes = getProperties().getOperandSegmentSizes();
       return sizes[1];
-    }    
+    }
 
     Value getBlock(int i) {
       assert(i >= 0);

@@ -12,15 +12,15 @@ click==8.1.7
 cloudpickle==3.1.0
 colored==2.2.4
 coloredlogs==15.0.1
-cuda-python==12.6.2
+cuda-python==12.6.0
 datasets==3.1.0
 diffusers==0.31.0
 dill==0.3.8
 einops==0.8.0
 evaluate==0.4.3
 filelock==3.16.1
-flash-attn==2.6.1
-flashinfer @ file:///home/dataset/ae_pkgs/flashinfer-0.1.0%2Bcu121torch2.2-cp310-cp310-linux_x86_64.whl
+# flash-attn
+# flashinfer @ file:///home/dataset/ae_pkgs/flashinfer-0.1.0%2Bcu121torch2.2-cp310-cp310-linux_x86_64.whl
 flatbuffers==24.3.25
 frozenlist==1.5.0
 fsspec==2024.9.0
@@ -42,22 +42,22 @@ multiprocess==0.70.16
 networkx==3.4.2
 ninja==1.11.1.1
 numpy==1.26.4
-nvidia-cublas-cu12==12.1.3.1
-nvidia-cuda-cupti-cu12==12.1.105
-nvidia-cuda-nvrtc-cu12==12.1.105
-nvidia-cuda-runtime-cu12==12.1.105
-nvidia-cudnn-cu12==8.9.2.26
-nvidia-cufft-cu12==11.0.2.54
-nvidia-curand-cu12==10.3.2.106
-nvidia-cusolver-cu12==11.4.5.107
-nvidia-cusparse-cu12==12.1.0.106
-nvidia-modelopt==0.11.2
-nvidia-nccl-cu12==2.19.3
-nvidia-nvjitlink-cu12==12.6.77
-nvidia-nvtx-cu12==12.1.105
+# nvidia-cublas-cu12==12.1.3.1
+# nvidia-cuda-cupti-cu12==12.1.105
+# nvidia-cuda-nvrtc-cu12==12.1.105
+# nvidia-cuda-runtime-cu12==12.1.105
+# nvidia-cudnn-cu12==8.9.2.26
+# nvidia-cufft-cu12==11.0.2.54
+# nvidia-curand-cu12==10.3.2.106
+# nvidia-cusolver-cu12==11.4.5.107
+# nvidia-cusparse-cu12==12.1.0.106
+# nvidia-modelopt==0.11.2
+# nvidia-nccl-cu12==2.19.3
+# nvidia-nvjitlink-cu12==12.6.77
+# nvidia-nvtx-cu12==12.1.105
 onnx==1.17.0
 onnxruntime==1.20.0
-onnxsim==0.4.36
+onnxsim
 optimum==1.23.3
 packaging==24.2
 pandas==2.2.3
@@ -89,12 +89,13 @@ tensorrt==10.0.1
 tensorrt-cu12==10.6.0
 tensorrt-cu12-bindings==10.6.0
 tensorrt-cu12-libs==10.6.0
+tensorrt-llm
 tokenizers==0.19.1
 tomli==2.1.0
-torch==2.2.2
+torch==2.7.0
 tqdm==4.67.0
 transformers==4.40.2
-triton==2.2.0
+triton
 typing_extensions==4.12.2
 tzdata==2024.2
 urllib3==2.2.3

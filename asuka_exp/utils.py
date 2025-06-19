@@ -67,7 +67,7 @@ def perf(label, f, args, kwargs={}, gflops=None, mem_gb=None, run=4, warmup=4, p
     msg += f', {gflops / (avg_ms / 1000.0)} gflops/s'
   if mem_gb is not None:
     msg += f', {mem_gb / (avg_ms / 1000.0)} gb/s'
-  
+
   msg += f' ({run} runs, {warmup} warmups)' if not profile else f' ({run} runs, {warmup} warmups, profiled)'
   print(msg, flush=True)
 
