@@ -8,48 +8,23 @@ This repository contains the implementation and evaluation of **H2O Diagonal Cac
 - NVIDIA GPU with CUDA support
 - Python 3.10+
 - CUDA 12.3+
+- Ubuntu 22.04+
 
+In our environment, the evaluation is conducted based on docker iamge `nvidia/cuda:12.3.2-cudnn9-devel-ubuntu22.04`.
 ### Quick Setup with Conda
 
 ```bash
 # Create and activate conda environment
 conda create -n ft python=3.10
 conda activate ft
+conda install -c conda-forge mpi4py openmpi
 
 # Install dependencies from exported requirements
 pip install -r requirements_pip.txt
 
-# Or install key packages manually:
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-pip install triton
-pip install click
-
 export PYTHONPATH="$(pwd):$(pwd)/evaluation:$PYTHONPATH"
 ```
 
-### Manual Environment Setup
-
-If you need to recreate the environment from scratch:
-
-```bash
-conda create -n ft python=3.10
-conda activate ft
-
-# Install PyTorch with CUDA support
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-
-# Install Triton for GPU kernels
-pip install triton
-
-# Install additional dependencies
-pip install click numpy scipy pandas matplotlib seaborn
-pip install tensorrt
-pip install onnx onnxruntime
-
-# Install FlashTensor dependencies
-cd 3rd/asuka
-pip install -e .
-```
 
 ## Repository Structure
 
