@@ -1,9 +1,4 @@
 import os, sys
-sys.path.insert(1, "/root/FlashTensor-AE")
-sys.path.insert(0, "/root/FlashTensor-AE/evaluation")
-
-os.chdir("/root/FlashTensor-AE/evaluation")
-
 import click
 import torch
 import numpy as np

@@ -23,6 +23,8 @@ pip install -r requirements_pip.txt
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 pip install triton
 pip install click
+
+export PYTHONPATH="$(pwd):$(pwd)/evaluation:$PYTHONPATH"
 ```
 
 ### Manual Environment Setup
